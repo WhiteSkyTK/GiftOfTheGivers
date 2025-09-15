@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container section-padding">
+    <div data-aos="fade-up">
+        <h1>Welcome, <span class="text-info">@User.Identity.Name</span>!</h1>
+        <p class="lead">Manage your profile, report incidents, and find volunteer opportunities.</p>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card text-center h-100">
+                <div class="card-body p-4">
+                    <h3>Report an Incident</h3>
+                    <p>Alert us to an emergency in your area.</p>
+                    <a asp-action="ReportIncident" class="btn btn-primary">Go &rarr;</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card text-center h-100">
+                <div class="card-body p-4">
+                    <h3>Volunteer Hub</h3>
+                    <p>Find and manage your assigned tasks.</p>
+                    <a asp-action="VolunteerHub" class="btn btn-primary">Go &rarr;</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card text-center h-100">
+                <div class="card-body p-4">
+                    <h3>My Profile</h3>
+                    <p>Update your contact information and skills.</p>
+                    <a asp-action="MyProfile" class="btn btn-primary">Go &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

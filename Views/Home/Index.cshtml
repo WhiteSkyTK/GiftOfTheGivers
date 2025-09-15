@@ -1,8 +1,90 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero-section">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4">Serving Humanity</h1>
+        <p class="lead my-4">Bringing hope and restoring dignity to the most vulnerable through swift, compassionate, and efficient disaster relief.</p>
+        <a href="#" class="btn btn-primary btn-lg">Donate Now</a>
+    </div>
+</section>
+
+<section class="stats-bar section-padding">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-4 stat-item" data-aos="fade-up" data-aos-delay="100">
+                <h3>R6+ Billion</h3>
+                <p>IN AID DISTRIBUTED</p>
+            </div>
+            <div class="col-md-4 stat-item" data-aos="fade-up" data-aos-delay="200">
+                <h3>47</h3>
+                <p>COUNTRIES REACHED</p>
+            </div>
+            <div class="col-md-4 stat-item" data-aos="fade-up" data-aos-delay="300">
+                <h3>30+ Years</h3>
+                <p>OF UNRELENTING SERVICE</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container text-center">
+        <h2 class="mb-5" data-aos="fade-up">Our Primary Focus</h2>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100">
+                    <img src="~/images/disaster-response.jpg" class="card-img-top focus-card-img" alt="Disaster Response">
+                    <div class="card-body">
+                        <h4>Disaster Response</h4>
+                        <p>Immediate, on-the-ground support for communities affected by natural disasters.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100">
+                    <img src="~/images/water-provision.jpg" class="card-img-top focus-card-img" alt="Water Provision">
+                    <div class="card-body">
+                        <h4>Water Provision</h4>
+                        <p>Delivering millions of litres of clean drinking water via boreholes and water trucks.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100">
+                    <img src="~/images/healthcare-support.jpg" class="card-img-top focus-card-img" alt="Healthcare Support">
+                    <div class="card-body">
+                        <h4>Healthcare</h4>
+                        <p>Providing medical supplies, mobile clinics, and support to healthcare facilities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6" data-aos="fade-right">
+                <h2>A Beacon of Hope</h2>
+                <p class="lead">Established in response to the growing need for organised relief efforts, the foundation operates on the principles of compassion, efficiency, and resilience.</p>
+                <p>This platform serves as a centralised hub for managing relief efforts, coordinating volunteers, and facilitating resource allocation during times of crisis.</p>
+                <a asp-action="About" asp-controller="Home" class="btn btn-primary mt-3">Learn More About Us</a>
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <img src="~/images/community-support.jpg" class="img-fluid rounded shadow-sm" alt="Volunteers helping a community">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding text-center volunteer-cta-section">
+    <div class="container" data-aos="fade-up">
+        <h2>Become a Volunteer</h2>
+        <p class="lead my-4">Join our diverse team of experts and volunteers to make a tangible difference in the lives of those affected by adversity.</p>
+        <a href="#" class="btn btn-primary btn-lg">Register Your Interest</a>
+    </div>
+</section>

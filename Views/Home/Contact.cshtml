@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<section class="page-hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/contact-hero.jpg');">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4">Get In Touch</h1>
+        <p class="lead">We'd love to hear from you. Reach out with questions, support requests, or partnership inquiries.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="card p-4 h-100">
+                    <h3 class="mb-4">Send Us a Message</h3>
+                    <form>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control form-control-icon" placeholder="Your Name" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                            <input type="email" class="form-control form-control-icon" placeholder="Email Address" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text align-items-start pt-2"><i class="bi bi-chat-left-text-fill"></i></span>
+                            <textarea class="form-control form-control-icon" rows="6" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
+                <div class="contact-info-box">
+                    <h3>Contact Information</h3>
+                    <p>Our national call centre is available to assist you. You can also reach us via email or visit our headquarters.</p>
+                    <ul class="mt-4">
+                        <li>
+                            <i class="bi bi-telephone-fill"></i>
+                            <span>Toll-Free: 0800 786 911</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope-fill"></i>
+                            <span>info@giftofthegivers.org</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>Pietermaritzburg, South Africa (HQ)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding" style="background-color: var(--white-color);">
+    <div class="container">
+        <div class="text-center" data-aos="fade-up">
+            <h2>Our Headquarters</h2>
+            <p class="lead">Find us at our main office in Pietermaritzburg.</p>
+        </div>
+        <div class="map-placeholder mt-4" data-aos="zoom-in">
+            <p class="text-muted">An interactive map will be displayed here.</p>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Report an Incident";
+}
+
+<div class="container my-5" data-aos="fade-up">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <p class="lead">Use this form to provide details about a natural disaster or emergency in your area.</p>
+    <hr />
+
+    <form asp-action="ReportIncident" method="post">
+        <div class="mb-3">
+            <label for="location" class="form-label">Location (City, Province)</label>
+            <input type="text" class="form-control" id="location" placeholder="e.g., Durban, KwaZulu-Natal" required />
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description of Incident</label>
+            <textarea class="form-control" id="description" rows="6" placeholder="Describe the situation, what is needed, etc." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Report</button>
+    </form>
+</div>
