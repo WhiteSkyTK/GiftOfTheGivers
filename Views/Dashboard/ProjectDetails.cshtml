@@ -1,0 +1,26 @@
+﻿@model Gift_Of_The_Givers_Web_App.Models.DisasterIncident
+
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Project Details";
+}
+
+<h1>@Model.Title</h1>
+<p class="lead">@Model.Description</p>
+<hr />
+
+<h3 class="mt-4">Available Tasks</h3>
+<table class="table">
+    <tbody>
+        @foreach (var task in Model.Tasks)
+        {
+            <tr>
+                <td>@task.Title</td>
+                <td>@task.TaskDate.ToShortDateString()</td>
+                <td>
+                    <a href="#" class="btn btn-sm btn-success">Sign Up for this Task</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

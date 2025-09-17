@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gift_Of_The_Givers_Web_App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250917022516_InitialCreate2")]
-    partial class InitialCreate2
+    [Migration("20250917185719_MakeIncidentUserOptional")]
+    partial class MakeIncidentUserOptional
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,9 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -89,6 +92,10 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("VolunteerStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -101,6 +108,35 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.ContactMessage", b =>
+                {
+                    b.Property<int>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("SubmissionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MessageId");
+
+                    b.ToTable("ContactMessages");
                 });
 
             modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.DisasterIncident", b =>
@@ -138,7 +174,6 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                         .HasColumnType("decimal(9, 6)");
 
                     b.Property<string>("ReportedByUserID")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
@@ -269,6 +304,69 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.HasKey("ResourceID");
 
                     b.ToTable("Resources");
+                });
+
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.ResourceGoal", b =>
+                {
+                    b.Property<int>("ResourceGoalID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResourceGoalID"));
+
+                    b.Property<int>("CurrentQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisasterIncidentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GoalQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResourceID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ResourceGoalID");
+
+                    b.HasIndex("DisasterIncidentID");
+
+                    b.HasIndex("ResourceID");
+
+                    b.ToTable("ResourceGoals");
+                });
+
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.VolunteerTask", b =>
+                {
+                    b.Property<int>("TaskID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskID"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DisasterIncidentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReliefProjectProjectID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TaskDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TaskID");
+
+                    b.HasIndex("DisasterIncidentID");
+
+                    b.HasIndex("ReliefProjectProjectID");
+
+                    b.ToTable("VolunteerTasks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -409,8 +507,7 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.HasOne("Gift_Of_The_Givers_Web_App.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ReportedByUserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ApplicationUser");
                 });
@@ -466,6 +563,44 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.Navigation("DisasterIncident");
                 });
 
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.ResourceGoal", b =>
+                {
+                    b.HasOne("Gift_Of_The_Givers_Web_App.Models.DisasterIncident", "DisasterIncident")
+                        .WithMany()
+                        .HasForeignKey("DisasterIncidentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gift_Of_The_Givers_Web_App.Models.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DisasterIncident");
+
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.VolunteerTask", b =>
+                {
+                    b.HasOne("Gift_Of_The_Givers_Web_App.Models.DisasterIncident", "DisasterIncident")
+                        .WithMany("Tasks")
+                        .HasForeignKey("DisasterIncidentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gift_Of_The_Givers_Web_App.Models.ReliefProject", "ReliefProject")
+                        .WithMany("Tasks")
+                        .HasForeignKey("ReliefProjectProjectID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DisasterIncident");
+
+                    b.Navigation("ReliefProject");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -515,6 +650,16 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.DisasterIncident", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.ReliefProject", b =>
+                {
+                    b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
         }

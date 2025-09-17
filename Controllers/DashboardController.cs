@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Gift_Of_The_Givers_Web_App.Controllers
 {
-    [Authorize(Roles = "Admin,Volunteer")] // This protects the entire controller
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +22,7 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
         }
 
         // Main dashboard page
+        [Authorize]
         public IActionResult Index()
         {
             return View();
@@ -30,12 +30,14 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
 
         // Page for the incident report form
         [HttpGet]
+        [Authorize]
         public IActionResult ReportIncident()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReportIncident(ReportIncidentViewModel model)
         {
@@ -136,6 +138,7 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                     DisasterIncidentID = incidentId,
                     VolunteerUserID = currentUser.Id
                 };
+                TempData["SuccessMessage"] = "Thank you! You have successfully signed up for this project.";
                 _context.ProjectVolunteers.Add(newAssignment);
                 await _context.SaveChangesAsync();
             }
@@ -143,11 +146,13 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
             return RedirectToAction("VolunteerHub");
         }
 
+        [Authorize]
         public IActionResult MyProfile()
         {
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> MyIncidents()
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -156,6 +161,73 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                                               .OrderByDescending(i => i.IncidentDate)
                                               .ToListAsync();
             return View(userIncidents);
+        }
+
+        [Authorize(Roles = "Admin,Volunteer")]
+        public async Task<IActionResult> AssignmentDetails(int incidentId)
+        {
+            var incident = await _context.DisasterIncidents
+                                         .FirstOrDefaultAsync(i => i.IncidentID == incidentId);
+            if (incident == null)
+            {
+                return NotFound();
+            }
+            // We can create a more detailed ViewModel later
+            return View(incident);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ApplyToBeVolunteer()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                user.VolunteerStatus = "Pending";
+                await _userManager.UpdateAsync(user);
+                TempData["SuccessMessage"] = "Your application to become a volunteer has been submitted for review.";
+            }
+            return RedirectToAction("VolunteerHub");
+        }
+
+        [Authorize] // Any logged-in user can see this page
+        public IActionResult BecomeAVolunteer()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult VolunteerApplication()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SubmitVolunteerApplication()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                user.VolunteerStatus = "Pending";
+                await _userManager.UpdateAsync(user);
+                TempData["SuccessMessage"] = "Your application to become a volunteer has been submitted for review.";
+            }
+            return RedirectToAction("VolunteerApplication");
+        }
+
+        [Authorize(Roles = "Admin,Volunteer")]
+        public async Task<IActionResult> ProjectDetails(int incidentId) // Assuming projects are linked to incidents
+        {
+            // This logic will need to be expanded to get a ReliefProject and its tasks
+            var project = await _context.DisasterIncidents
+                                        .Include(p => p.Tasks) // You'll need to include the tasks
+                                        .FirstOrDefaultAsync(p => p.IncidentID == incidentId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+            return View(project);
         }
     }
 }

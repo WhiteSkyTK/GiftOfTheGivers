@@ -55,5 +55,25 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
             var neededResources = await _context.Resources.ToListAsync();
             return View(neededResources);
         }
+
+        // ADD THIS NEW ACTION to handle the form submission
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Contact(ContactMessage contactMessage)
+        {
+            if (ModelState.IsValid)
+            {
+                contactMessage.SubmissionDate = DateTime.UtcNow;
+                _context.ContactMessages.Add(contactMessage);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Thank you for your message! We will get back to you shortly.";
+
+                return RedirectToAction("Contact");
+            }
+
+            // If the form is invalid, show it again with the errors
+            return View(contactMessage);
+        }
     }
 }

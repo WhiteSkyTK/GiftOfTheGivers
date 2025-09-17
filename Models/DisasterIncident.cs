@@ -12,7 +12,7 @@ namespace Gift_Of_The_Givers_Web_App.Models
         public string Title { get; set; }
 
         [ForeignKey("ApplicationUser")]
-        public string ReportedByUserID { get; set; }
+        public string? ReportedByUserID { get; set; }
 
         [Required, StringLength(255)]
         public string Location { get; set; } = string.Empty;
@@ -40,5 +40,7 @@ namespace Gift_Of_The_Givers_Web_App.Models
 
         // Navigation property
         public virtual ApplicationUser? ApplicationUser { get; set; }
+        // Navigation property to hold all tasks for this incident
+        public virtual ICollection<VolunteerTask> Tasks { get; set; }
     }
 }

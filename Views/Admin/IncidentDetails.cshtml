@@ -1,44 +1,51 @@
-﻿@model Gift_Of_The_Givers_Web_App.Models.DisasterIncident
+﻿@model Gift_Of_The_Givers_Web_App.ViewModels.AdminIncidentDetailsViewModel
 @{
     ViewData["Title"] = "Incident Details";
     Layout = "_DashboardLayout";
 }
 
-<h1>@Model.Title</h1>
-<p class="text-muted">Submitted by: @Model.ApplicationUser?.Email on @Model.IncidentDate.ToShortDateString()</p>
-<hr />
+<h1>@Model.Incident.Title</h1>
+<hr class="my-4" />
 
 <div class="row">
-    <div class="col-md-7">
-        <h3>Details</h3>
-        <dl class="row">
-            <dt class="col-sm-4">Location</dt>
-            <dd class="col-sm-8">@Model.Location</dd>
-
-            <dt class="col-sm-4">Status</dt>
-            <dd class="col-sm-8">@Model.Status</dd>
-
-            <dt class="col-sm-4">Description</dt>
-            <dd class="col-sm-8">@Model.Description</dd>
-        </dl>
-
-        @if (Model.Status == "Pending Verification")
+    <div class="col-md-6">
+        <h4>Existing Volunteer Tasks</h4>
+        @if (Model.Incident.Tasks != null && Model.Incident.Tasks.Any())
         {
-            <form asp-action="ApproveIncident" method="post" class="mt-4">
-                <input type="hidden" name="incidentId" value="@Model.IncidentID" />
-                <button type="submit" class="btn btn-success"><i class="bi bi-check-circle-fill"></i> Approve Incident</button>
-            </form>
-        }
-    </div>
-    <div class="col-md-5">
-        <h3>Image</h3>
-        @if (!string.IsNullOrEmpty(Model.ImageUrl))
-        {
-            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="@Model.Title">
+            <ul class="list-group">
+                @foreach (var task in Model.Incident.Tasks)
+                {
+                    <li class="list-group-item">@task.Title (@task.TaskDate.ToShortDateString())</li>
+                }
+            </ul>
         }
         else
         {
-            <p class="text-muted">No image was submitted for this incident.</p>
+            <p class="text-muted">No tasks created yet.</p>
         }
+    </div>
+    <div class="col-md-6">
+        <h4>Add a New Task</h4>
+        <form asp-action="AddTaskToIncident" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input asp-for="NewTask.DisasterIncidentID" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="NewTask.Title" class="form-label"></label>
+                <input asp-for="NewTask.Title" class="form-control" />
+                <span asp-validation-for="NewTask.Title" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="NewTask.TaskDate" class="form-label"></label>
+                <input asp-for="NewTask.TaskDate" type="date" class="form-control" />
+                <span asp-validation-for="NewTask.TaskDate" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="NewTask.Description" class="form-label"></label>
+                <textarea asp-for="NewTask.Description" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-secondary">Add Task</button>
+        </form>
     </div>
 </div>

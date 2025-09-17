@@ -1,41 +1,60 @@
 ﻿@{
-    Layout = "_DashboardLayout"; // Use the new dashboard layout
+    Layout = "_DashboardLayout";
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container section-padding">
-    <div data-aos="fade-up">
-        <h1>Welcome, <span class="text-info">@User.Identity.Name</span>!</h1>
-        <p class="lead">Manage your profile, report incidents, and find volunteer opportunities.</p>
-    </div>
+<div data-aos="fade-up">
+    <h1>Welcome, <span class="text-accent">@User.Identity?.Name</span>!</h1>
 
+    @if (User.IsInRole("Admin") || User.IsInRole("Volunteer"))
+    {
+        <p class="lead">Manage your profile, report incidents, and find volunteer opportunities.</p>
+    }
+    else
+    {
+        <p class="lead">From here you can manage your profile or apply to become a volunteer.</p>
+    }
+</div>
+
+@if (User.IsInRole("Admin") || User.IsInRole("Volunteer"))
+{
     <div class="row g-4 mt-4">
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card text-center h-100">
-                <div class="card-body p-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="card dashboard-card text-center h-100 p-3">
+                <div class="card-body">
+                    <div class="card-icon"><i class="bi bi-exclamation-triangle"></i></div>
                     <h3>Report an Incident</h3>
-                    <p>Alert us to an emergency in your area.</p>
-                    <a asp-action="ReportIncident" class="btn btn-primary">Go &rarr;</a>
+                    <a asp-controller="Dashboard" asp-action="ReportIncident" class="btn btn-primary mt-auto">Go &rarr;</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card text-center h-100">
-                <div class="card-body p-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="card dashboard-card text-center h-100 p-3">
+                <div class="card-body">
+                    <div class="card-icon"><i class="bi bi-people-fill"></i></div>
                     <h3>Volunteer Hub</h3>
-                    <p>Find and manage your assigned tasks.</p>
-                    <a asp-action="VolunteerHub" class="btn btn-primary">Go &rarr;</a>
+                    <a asp-controller="Dashboard" asp-action="VolunteerHub" class="btn btn-primary mt-auto">Go &rarr;</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-            <div class="card text-center h-100">
-                <div class="card-body p-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="card dashboard-card text-center h-100 p-3">
+                <div class="card-body">
+                    <div class="card-icon"><i class="bi bi-person-circle"></i></div>
                     <h3>My Profile</h3>
-                    <p>Update your contact information and skills.</p>
-                    <a asp-action="MyProfile" class="btn btn-primary">Go &rarr;</a>
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn btn-primary mt-auto">Go &rarr;</a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
+else
+{
+    <div class="card mt-4" data-aos="fade-up">
+        <div class="card-body text-center p-5">
+            <h3>Become a Volunteer</h3>
+            <p class="lead my-3">Join our team of dedicated volunteers and make a real impact. View your application status or submit an application to get started.</p>
+            <a asp-controller="Dashboard" asp-action="VolunteerApplication" class="btn btn-primary btn-lg">My Volunteer Application</a>
+        </div>
+    </div>
+}

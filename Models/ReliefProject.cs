@@ -23,5 +23,7 @@ namespace Gift_Of_The_Givers_Web_App.Models
 
         // Navigation property
         public virtual DisasterIncident DisasterIncident { get; set; }
+        // Navigation property to hold all tasks for this project
+        public virtual ICollection<VolunteerTask> Tasks { get; set; }
     }
 }

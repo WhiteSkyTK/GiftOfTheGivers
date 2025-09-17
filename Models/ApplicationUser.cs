@@ -16,5 +16,10 @@ namespace Gift_Of_The_Givers_Web_App.Models
         public string LastName { get; set; }
 
         public DateTime DateRegistered { get; set; }
+
+        public string VolunteerStatus { get; set; }
+
+        public string? ProfilePictureUrl { get; set; }
+
     }
 }

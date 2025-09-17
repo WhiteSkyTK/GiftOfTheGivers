@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Manage Volunteers";
+    Layout = "_DashboardLayout";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Review and approve new volunteer applications.</p>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Application Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FirstName @user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.DateRegistered.ToShortDateString()</td>
+                <td>
+                    <form asp-action="ApproveVolunteer" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

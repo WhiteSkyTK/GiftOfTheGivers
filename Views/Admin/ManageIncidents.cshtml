@@ -24,7 +24,13 @@
                 <td>@item.Location</td>
                 <td><span class="badge bg-warning text-dark">@item.Status</span></td>
                 <td>
-                    <a asp-action="IncidentDetails" asp-route-incidentId="@item.IncidentID" class="btn btn-sm btn-primary">View Details</a>
+                    <a asp-action="IncidentDetails" asp-route-incidentId="@item.IncidentID" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="EditIncident" asp-route-incidentId="@item.IncidentID" class="btn btn-sm btn-warning">Edit</a>
+
+                    <form asp-action="DeleteIncidentConfirmed" method="post" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                        <input type="hidden" name="incidentId" value="@item.IncidentID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
                 </td>
             </tr>
         }

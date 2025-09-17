@@ -41,24 +41,37 @@
             <li class="nav-item mb-2">
                 <a class="nav-link" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2"></i> Dashboard Home</a>
             </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-circle"></i> My Profile</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="MyIncidents"><i class="bi bi-list-task"></i> My Incidents</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="ReportIncident"><i class="bi bi-exclamation-triangle"></i> Report Incident</a>
+            </li>
+
+            @if (User.IsInRole("GeneralUser"))
+            {
+                <li class="nav-item mb-2">
+                    <a class="nav-link" asp-controller="Dashboard" asp-action="VolunteerApplication"><i class="bi bi-file-earmark-person"></i> My Volunteer Application</a>
+                </li>
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Volunteer"))
+            {
+                <li class="nav-item mb-2">
+                    <a class="nav-link" asp-controller="Dashboard" asp-action="VolunteerHub"><i class="bi bi-people-fill"></i> Volunteer Hub</a>
+                </li>
+            }
+
             @if (User.IsInRole("Admin"))
             {
                 <li class="nav-item mb-2">
                     <a class="nav-link text-warning" asp-controller="Admin" asp-action="Index"><i class="bi bi-shield-lock-fill"></i> Admin Panel</a>
                 </li>
             }
-            <li class="nav-item mb-2">
-                <a class="nav-link" asp-controller="Dashboard" asp-action="ReportIncident"><i class="bi bi-exclamation-triangle"></i> Report Incident</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" asp-controller="Dashboard" asp-action="VolunteerHub"><i class="bi bi-people-fill"></i> Volunteer Hub</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" asp-controller="Dashboard" asp-action="MyIncidents"><i class="bi bi-list-task"></i> My Incidents</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-circle"></i> My Profile</a>
-            </li>
+
             <li class="nav-item mt-auto">
                 <partial name="_LoginPartial" />
             </li>

@@ -1,0 +1,43 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Become a Volunteer";
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+<div data-aos="fade-up">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<div class="card mt-4" data-aos="fade-up">
+    <div class="card-body text-center p-5">
+
+        @switch (currentUser.VolunteerStatus)
+        {
+            case "Pending":
+                <div class="alert alert-info">
+                    <h3>Application Pending</h3>
+                    <p class="lead my-3">Your application is currently under review by an administrator. Thank you for your patience.</p>
+                </div>
+                break;
+
+            case "Approved":
+                <div class="alert alert-success">
+                    <h3>Application Approved!</h3>
+                    <p class="lead my-3">Welcome to the team! You now have full access to the Volunteer Hub.</p>
+                    <a asp-action="VolunteerHub" class="btn btn-primary btn-lg">Go to Volunteer Hub</a>
+                </div>
+                break;
+
+            default: // "Not Applied" or anything else
+                     <h3>Join Our Team</h3>
+                     <p class="lead my-3">Make a real impact in communities across the nation by submitting your application to become a volunteer.</p>
+                     <form asp-action="ApplyToBeVolunteer" method="post">
+                         <button type="submit" class="btn btn-primary btn-lg">Apply Now</button>
+                     </form>
+                break;
+        }
+
+    </div>
+</div>

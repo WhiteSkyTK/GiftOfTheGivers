@@ -1,4 +1,8 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using Gift_Of_The_Givers_Web_App.Models
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
     ViewData["Title"] = "Home";
 }
 
@@ -6,7 +10,7 @@
     <div class="container" data-aos="fade-up">
         <h1 class="display-4">Serving Humanity</h1>
         <p class="lead my-4">Bringing hope and restoring dignity to the most vulnerable through swift, compassionate, and efficient disaster relief.</p>
-        <a href="#" class="btn btn-primary btn-lg">Donate Now</a>
+        <a asp-controller="Home" asp-action="Donate" class="btn btn-primary btn-lg">Donate Now</a>
     </div>
 </section>
 
@@ -85,6 +89,15 @@
     <div class="container" data-aos="fade-up">
         <h2>Become a Volunteer</h2>
         <p class="lead my-4">Join our diverse team of experts and volunteers to make a tangible difference in the lives of those affected by adversity.</p>
-        <a href="#" class="btn btn-primary btn-lg">Register Your Interest</a>
+
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a asp-controller="Dashboard" asp-action="VolunteerApplication" class="btn btn-primary btn-lg">Become a Volunteer</a>
+        }
+        else
+        {
+            // If user is not logged in, link to the Register page
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg">Register Your Interest</a>
+        }
     </div>
 </section>

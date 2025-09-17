@@ -1,4 +1,6 @@
-﻿@model Gift_Of_The_Givers_Web_App.ViewModels.VolunteerHubViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model Gift_Of_The_Givers_Web_App.ViewModels.VolunteerHubViewModel
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     Layout = "_DashboardLayout";
@@ -7,9 +9,35 @@
 
 <div data-aos="fade-up">
     <h1>@ViewData["Title"]</h1>
-    <p class="lead">View your active assignments and find new opportunities to contribute.</p>
+    <partial name="_StatusMessage" model="@(TempData["SuccessMessage"] as string)" />
 </div>
 
+@if (User.IsInRole("Volunteer"))
+{
+    <p class="lead">View your active assignments and find new opportunities to contribute.</p>
+}
+else
+{
+    <div class="card mt-4" data-aos="fade-up">
+        <div class="card-body text-center p-5">
+            <h3>Become a Volunteer</h3>
+            <p class="lead my-3">Join our team of dedicated volunteers and make a real impact in communities across the nation. Submit your application to get started.</p>
+            @{
+                var currentUser = await UserManager.GetUserAsync(User);
+                if (currentUser.VolunteerStatus == "Pending")
+                {
+                    <div class="alert alert-info">Your application is currently pending review by an administrator.</div>
+                }
+                else
+                {
+                    <form asp-action="ApplyToBeVolunteer" method="post">
+                        <button type="submit" class="btn btn-primary btn-lg">Apply Now</button>
+                    </form>
+                }
+            }
+        </div>
+    </div>
+}
 <div class="filter-bar mt-4" data-aos="fade-up" data-aos-delay="100">
     <form asp-action="VolunteerHub" method="get" class="row g-3 align-items-end">
         <div class="col-md-6">
@@ -42,6 +70,7 @@
                 <div class="card-body">
                     <h5 class="card-title">@assignment.Title</h5>
                     <p class="card-text text-muted">Location: @assignment.Location</p>
+                    <a asp-action="AssignmentDetails" asp-route-incidentId="@assignment.IncidentID" class="btn btn-sm btn-outline-dark">View Assignment Details</a>
                 </div>
             </div>
         }
@@ -73,6 +102,7 @@
                         <div class="col-md-3 text-md-end mt-3 mt-md-0">
                             <form asp-action="SignUpForIncident" method="post">
                                 <input type="hidden" name="incidentId" value="@opportunity.IncidentID" />
+                                <a asp-action="ProjectDetails" asp-route-incidentId="@opportunity.IncidentID" class="btn btn-primary">View Details</a>
                                 <button type="submit" class="btn btn-primary">Sign Up</button>
                             </form>
                         </div>

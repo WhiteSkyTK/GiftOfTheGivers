@@ -1,0 +1,23 @@
+﻿@model Gift_Of_The_Givers_Web_App.Models.DisasterIncident
+
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Assignment Details";
+}
+
+<h1>@Model.Title</h1>
+<p class="text-muted">Location: @Model.Location</p>
+<hr />
+
+<div class="mt-4">
+    <h4>Your Role & Responsibilities</h4>
+    <p>@Model.Description</p>
+
+    <h4 class="mt-4">Logistics</h4>
+    <ul>
+        <li><strong>Date:</strong> [Date from database, to be added later]</li>
+        <li><strong>Meeting Point:</strong> [Address from database, to be added later]</li>
+        <li><strong>On-site Contact:</strong> [Contact person from database, to be added later]</li>
+    </ul>
+
+</div>

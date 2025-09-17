@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Gift_Of_The_Givers_Web_App.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class FinalVersion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,8 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateRegistered = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VolunteerStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -51,6 +53,22 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContactMessages",
+                columns: table => new
+                {
+                    MessageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SubmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactMessages", x => x.MessageId);
                 });
 
             migrationBuilder.CreateTable(
@@ -249,6 +267,34 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ResourceGoals",
+                columns: table => new
+                {
+                    ResourceGoalID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DisasterIncidentID = table.Column<int>(type: "int", nullable: false),
+                    ResourceID = table.Column<int>(type: "int", nullable: false),
+                    GoalQuantity = table.Column<int>(type: "int", nullable: false),
+                    CurrentQuantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ResourceGoals", x => x.ResourceGoalID);
+                    table.ForeignKey(
+                        name: "FK_ResourceGoals_DisasterIncidents_DisasterIncidentID",
+                        column: x => x.DisasterIncidentID,
+                        principalTable: "DisasterIncidents",
+                        principalColumn: "IncidentID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ResourceGoals_Resources_ResourceID",
+                        column: x => x.ResourceID,
+                        principalTable: "Resources",
+                        principalColumn: "ResourceID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Donations",
                 columns: table => new
                 {
@@ -281,6 +327,35 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                         column: x => x.ResourceID,
                         principalTable: "Resources",
                         principalColumn: "ResourceID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VolunteerTasks",
+                columns: table => new
+                {
+                    TaskID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisasterIncidentID = table.Column<int>(type: "int", nullable: false),
+                    TaskDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReliefProjectProjectID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VolunteerTasks", x => x.TaskID);
+                    table.ForeignKey(
+                        name: "FK_VolunteerTasks_DisasterIncidents_DisasterIncidentID",
+                        column: x => x.DisasterIncidentID,
+                        principalTable: "DisasterIncidents",
+                        principalColumn: "IncidentID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_VolunteerTasks_ReliefProjects_ReliefProjectProjectID",
+                        column: x => x.ReliefProjectProjectID,
+                        principalTable: "ReliefProjects",
+                        principalColumn: "ProjectID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -351,6 +426,26 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                 name: "IX_ReliefProjects_IncidentID",
                 table: "ReliefProjects",
                 column: "IncidentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResourceGoals_DisasterIncidentID",
+                table: "ResourceGoals",
+                column: "DisasterIncidentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResourceGoals_ResourceID",
+                table: "ResourceGoals",
+                column: "ResourceID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VolunteerTasks_DisasterIncidentID",
+                table: "VolunteerTasks",
+                column: "DisasterIncidentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VolunteerTasks_ReliefProjectProjectID",
+                table: "VolunteerTasks",
+                column: "ReliefProjectProjectID");
         }
 
         /// <inheritdoc />
@@ -372,19 +467,28 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ContactMessages");
+
+            migrationBuilder.DropTable(
                 name: "Donations");
 
             migrationBuilder.DropTable(
                 name: "ProjectVolunteers");
 
             migrationBuilder.DropTable(
+                name: "ResourceGoals");
+
+            migrationBuilder.DropTable(
+                name: "VolunteerTasks");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "ReliefProjects");
+                name: "Resources");
 
             migrationBuilder.DropTable(
-                name: "Resources");
+                name: "ReliefProjects");
 
             migrationBuilder.DropTable(
                 name: "DisasterIncidents");

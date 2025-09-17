@@ -1,0 +1,63 @@
+﻿@model Gift_Of_The_Givers_Web_App.ViewModels.EditIncidentViewModel
+@{
+    ViewData["Title"] = "Edit Incident";
+    Layout = "_DashboardLayout";
+}
+
+<div data-aos="fade-up">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Update the details for the incident: <strong>@Model.Title</strong></p>
+    <hr />
+</div>
+
+<div class="card p-4 mt-4" data-aos="fade-up" data-aos-delay="100">
+    <form asp-action="EditIncident" method="post">
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <input type="hidden" asp-for="IncidentID" />
+        <input type="hidden" asp-for="ReportedByUserID" />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Title" class="form-label fw-bold"></label>
+                <input asp-for="Title" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Location" class="form-label fw-bold"></label>
+                <input asp-for="Location" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label fw-bold"></label>
+            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ImageUrl" class="form-label fw-bold"></label>
+            <input asp-for="ImageUrl" class="form-control" />
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="FundingGoal" class="form-label fw-bold"></label>
+                <input asp-for="FundingGoal" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="CurrentFunds" class="form-label fw-bold"></label>
+                <input asp-for="CurrentFunds" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Status" class="form-label fw-bold"></label>
+                <select asp-for="Status" class="form-select">
+                    <option value="Pending Verification">Pending Verification</option>
+                    <option value="Active">Active</option>
+                    <option value="Closed">Closed</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="ManageIncidents" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

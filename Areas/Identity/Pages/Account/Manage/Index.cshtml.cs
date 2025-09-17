@@ -17,13 +17,16 @@ namespace Gift_Of_The_Givers_Web_App.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         /// <summary>
@@ -66,6 +69,8 @@ namespace Gift_Of_The_Givers_Web_App.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            public string ProfilePictureUrl { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -79,7 +84,8 @@ namespace Gift_Of_The_Givers_Web_App.Areas.Identity.Pages.Account.Manage
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                ProfilePictureUrl = user.ProfilePictureUrl
             };
         }
 
@@ -126,6 +132,37 @@ namespace Gift_Of_The_Givers_Web_App.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostUploadProfilePictureAsync(IFormFile profilePictureFile)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            if (profilePictureFile != null)
+            {
+                // Create a unique filename
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + profilePictureFile.FileName;
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/profile-pictures");
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Create the directory if it doesn't exist
+                Directory.CreateDirectory(uploadsFolder);
+
+                // Save the file
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await profilePictureFile.CopyToAsync(fileStream);
+                }
+
+                // Update the user's profile picture URL
+                user.ProfilePictureUrl = "/images/profile-pictures/" + uniqueFileName;
+                await _userManager.UpdateAsync(user);
+
+                StatusMessage = "Your profile picture has been updated.";
+            }
+
             return RedirectToPage();
         }
     }

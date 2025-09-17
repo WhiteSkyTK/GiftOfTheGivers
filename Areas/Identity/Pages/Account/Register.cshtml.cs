@@ -127,6 +127,7 @@ namespace Gift_Of_The_Givers_Web_App.Areas.Identity.Pages.Account
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.DateRegistered = DateTime.UtcNow;
+                user.VolunteerStatus = "Not Applied";
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
