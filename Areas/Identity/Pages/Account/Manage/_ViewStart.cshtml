@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Gift_Of_The_Givers_Web_App.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
+    var isVolunteer = user != null && await UserManager.IsInRoleAsync(user, "Volunteer");
+
+    // If the user is an Admin or Volunteer, use the dashboard layout.
+    if (isAdmin || isVolunteer)
+    {
+        Layout = "/Views/Shared/_DashboardLayout.cshtml";
+    }
+    // Otherwise (for GeneralUser), use the main public layout.
+    else
+    {
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
+}

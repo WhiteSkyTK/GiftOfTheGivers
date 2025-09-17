@@ -4,14 +4,14 @@ namespace Gift_Of_The_Givers_Web_App.Models
 {
     public class ProjectVolunteer
     {
-        [ForeignKey("ReliefProject")]
-        public int ProjectID { get; set; }
+        [ForeignKey("DisasterIncident")]
+        public int DisasterIncidentID { get; set; }
 
-        [ForeignKey("User")]
-        public int VolunteerUserID { get; set; }
+        [ForeignKey("ApplicationUser")]
+        public string VolunteerUserID { get; set; }
 
         // Navigation properties
-        public virtual ReliefProject ReliefProject { get; set; }
-        public virtual User User { get; set; }
+        public virtual DisasterIncident DisasterIncident { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

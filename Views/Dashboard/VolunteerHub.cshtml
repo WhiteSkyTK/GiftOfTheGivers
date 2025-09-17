@@ -1,21 +1,84 @@
-﻿@{
+﻿@model Gift_Of_The_Givers_Web_App.ViewModels.VolunteerHubViewModel
+
+@{
+    Layout = "_DashboardLayout";
     ViewData["Title"] = "Volunteer Hub";
 }
 
-<div class="container my-5" data-aos="fade-up">
-    <h1 class="display-4">@ViewData["Title"]</h1>
-    <p class="lead">Find opportunities to contribute your time and skills to active relief projects.</p>
-    <hr />
+<div data-aos="fade-up">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">View your active assignments and find new opportunities to contribute.</p>
+</div>
 
-    <div class="alert alert-info">
-        Active volunteer projects will be listed here once this section is connected to the database.
-    </div>
-
-    <div class="card mt-3" data-aos="fade-up" data-aos-delay="200">
-        <div class="card-body">
-            <h5 class="card-title">Eastern Cape Flood Relief</h5>
-            <p class="card-text">We need volunteers to help with distributing food parcels and blankets.</p>
-            <a href="#" class="btn btn-primary">View Details & Sign Up</a>
+<div class="filter-bar mt-4" data-aos="fade-up" data-aos-delay="100">
+    <form asp-action="VolunteerHub" method="get" class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label asp-for="SearchQuery" class="form-label fw-bold">Search by Keyword</label>
+            <input asp-for="SearchQuery" class="form-control" placeholder="e.g., Flood Relief, Medical Aid...">
         </div>
-    </div>
+        <div class="col-md-4">
+            <label asp-for="SelectedLocation" class="form-label fw-bold">Location</label>
+            <select asp-for="SelectedLocation" asp-items="@Model.Locations" class="form-select">
+                <option value="">All Locations</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+</div>
+
+<div class="mt-5" data-aos="fade-up" data-aos-delay="200">
+    <h3 class="mb-3">Your Active Assignments</h3>
+    @if (!Model.MyAssignments.Any())
+    {
+        <p>You are not currently signed up for any assignments.</p>
+    }
+    else
+    {
+        @foreach (var assignment in Model.MyAssignments)
+        {
+            <div class="card active-assignment-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@assignment.Title</h5>
+                    <p class="card-text text-muted">Location: @assignment.Location</p>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+
+<div class="mt-5" data-aos="fade-up" data-aos-delay="300">
+    <h3 class="mb-3">Available Opportunities</h3>
+    @if (!Model.AvailableOpportunities.Any())
+    {
+        <div class="alert alert-info">There are no new volunteer opportunities matching your search. Please check back later.</div>
+    }
+    else
+    {
+        @foreach (var opportunity in Model.AvailableOpportunities)
+        {
+            <div class="card opportunity-card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h5 class="card-title">@opportunity.Title</h5>
+                            <div class="card-meta">
+                                <span class="me-3"><i class="bi bi-geo-alt-fill"></i>@opportunity.Location</span>
+                                <span class="me-3"><i class="bi bi-calendar-event-fill"></i>Posted: @opportunity.IncidentDate.ToShortDateString()</span>
+                            </div>
+                            <p class="card-text mt-2">@opportunity.Description</p>
+                        </div>
+                        <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                            <form asp-action="SignUpForIncident" method="post">
+                                <input type="hidden" name="incidentId" value="@opportunity.IncidentID" />
+                                <button type="submit" class="btn btn-primary">Sign Up</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
 </div>

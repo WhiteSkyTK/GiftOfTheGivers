@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_DashboardLayout"; // We can reuse the dashboard layout for now
+}
+
+<div data-aos="fade-up">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Welcome, Admin. From here you can manage users, projects, and donations.</p>
+</div>
+
+<div class="row g-4 mt-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card dashboard-card text-center h-100 p-3">
+            <div class="card-body">
+                <div class="card-icon"><i class="bi bi-shield-check"></i></div>
+                <h3>Manage Incidents</h3>
+                <p>View and approve new incident reports.</p>
+                <a asp-action="ManageIncidents" class="btn btn-primary mt-auto">Go &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>

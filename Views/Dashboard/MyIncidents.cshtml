@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.DisasterIncident>
+@{
+    ViewData["Title"] = "My Submitted Incidents";
+    Layout = "_DashboardLayout";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Here is a list of the incidents you have reported.</p>
+
+<table class="table table-striped table-hover mt-4">
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Location</td>
+                <td>@item.Status</td>
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

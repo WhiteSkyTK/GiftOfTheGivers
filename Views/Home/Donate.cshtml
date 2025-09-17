@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.Resource>
+
+@{
+    ViewData["Title"] = "Donate";
+}
+
+<section class="page-hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/donate-hero.jpg');">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4">Make a Difference</h1>
+        <p class="lead">Your contribution, big or small, brings hope and restores dignity.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-6" data-aos="fade-right">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-icon"><i class="bi bi-cash-coin"></i></div>
+                    <h3>Donate Monetarily</h3>
+                    <p>Financial contributions allow us the flexibility to respond quickly and purchase exactly what is needed most in a crisis.</p>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mt-auto">Donate Funds</a>
+                </div>
+            </div>
+
+            <div class="col-md-6" data-aos="fade-left" data-aos-delay="100">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-icon"><i class="bi bi-box2-heart"></i></div>
+                    <h3>Donate Resources</h3>
+                    <p>We gratefully accept donations of essential items. See our list of currently needed resources below.</p>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mt-auto">Donate Goods</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5" data-aos="fade-up">
+            <h2 class="text-center mb-4">Currently Needed Items</h2>
+            <ul class="list-group list-group-flush">
+                @foreach (var item in Model)
+                {
+                    <li class="list-group-item">@item.ResourceName - <span class="text-muted">@item.Description</span></li>
+                }
+            </ul>
+        </div>
+    </div>
+</section>

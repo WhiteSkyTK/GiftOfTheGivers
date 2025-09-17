@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.DisasterIncident>
+
+@{
+    ViewData["Title"] = "Manage Incidents";
+    Layout = "_DashboardLayout";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Review and approve new incident reports submitted by users.</p>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Location</td>
+                <td><span class="badge bg-warning text-dark">@item.Status</span></td>
+                <td>
+                    <a asp-action="IncidentDetails" asp-route-incidentId="@item.IncidentID" class="btn btn-sm btn-primary">View Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

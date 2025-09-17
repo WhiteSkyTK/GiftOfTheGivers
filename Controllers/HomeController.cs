@@ -1,16 +1,18 @@
-using System.Diagnostics;
+using Gift_Of_The_Givers_Web_App.Data;
 using Gift_Of_The_Givers_Web_App.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Gift_Of_The_Givers_Web_App.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
@@ -23,9 +25,13 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
             return View();
         }
 
-        public IActionResult ActiveDisasters()
+        public async Task<IActionResult> ActiveDisasters()
         {
-            return View();
+            // Fetch all incidents from the database
+            var incidents = await _context.DisasterIncidents
+                                          .Where(i => i.Status == "Active") // Or another status you want to show
+                                          .ToListAsync();
+            return View(incidents);
         }
 
         public IActionResult Contact()
@@ -42,6 +48,12 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public async Task<IActionResult> Donate()
+        {
+            var neededResources = await _context.Resources.ToListAsync();
+            return View(neededResources);
         }
     }
 }

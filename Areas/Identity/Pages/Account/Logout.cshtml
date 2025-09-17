@@ -1,0 +1,18 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Logged Out";
+}
+
+<div class="auth-container">
+    <div class="card auth-card text-center" data-aos="fade-up">
+        <div class="auth-card-header">
+            <i class="bi bi-check-circle-fill" style="font-size: 4rem; color: var(--cambridge-blue);"></i>
+            <h1 class="mt-3">@ViewData["Title"]</h1>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <p class="lead">You have successfully logged out of the application.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Return to Homepage</a>
+        </div>
+    </div>
+</div>

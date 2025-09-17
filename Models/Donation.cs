@@ -8,8 +8,8 @@ namespace Gift_Of_The_Givers_Web_App.Models
         [Key]
         public int DonationID { get; set; }
 
-        [ForeignKey("User")]
-        public int DonorUserID { get; set; }
+        [ForeignKey("ApplicationUser")]
+        public string DonorUserID { get; set; }
 
         [ForeignKey("ReliefProject")]
         public int? ProjectID { get; set; } // Nullable
@@ -27,7 +27,7 @@ namespace Gift_Of_The_Givers_Web_App.Models
         public DateTime DonationDate { get; set; }
 
         // Navigation properties
-        public virtual User? User { get; set; }
+        public virtual ApplicationUser? ApplicationUser { get; set; }
         public virtual ReliefProject? ReliefProject { get; set; }
         public virtual Resource? Resource { get; set; }
     }
