@@ -72,7 +72,7 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                 return RedirectToAction("Contact");
             }
 
-            // If the form is invalid, show it again with the errors
+            // If the form is invalid, show it again with the errors New work
             return View(contactMessage);
         }
 
