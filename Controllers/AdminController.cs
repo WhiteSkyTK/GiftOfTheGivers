@@ -169,13 +169,37 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddResourceGoal(ResourceGoal resourceGoal)
     {
+        // First, check if the goal quantity is valid.
         if (ModelState.IsValid)
         {
+            // If it is, save the new goal and redirect back to the page
             _context.ResourceGoals.Add(resourceGoal);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Resource goal added successfully!";
+            return RedirectToAction("EditIncident", new { incidentId = resourceGoal.DisasterIncidentID });
         }
-        return RedirectToAction("EditIncident", new { incidentId = resourceGoal.DisasterIncidentID });
+
+        // --- THIS IS THE FIX ---
+        // If we get here, validation failed. We must NOT redirect.
+        TempData["ErrorMessage"] = "Could not add resource goal. Please check the quantity.";
+
+        // We need to reload all the data for the EditIncident page to display it again.
+        var incident = await _context.DisasterIncidents
+            .Include(i => i.ResourceGoals).ThenInclude(rg => rg.Resource)
+            .FirstOrDefaultAsync(i => i.IncidentID == resourceGoal.DisasterIncidentID);
+
+        if (incident == null)
+        {
+            return NotFound(); // Safety check
+        }
+
+        // We must also repopulate the ViewBag for the dropdown list.
+        ViewBag.Resources = await _context.Resources
+            .Select(r => new SelectListItem { Text = r.ResourceName, Value = r.ResourceID.ToString() })
+            .ToListAsync();
+
+        // Now, return the EditIncident view. The validation errors will now be displayed.
+        return View("EditIncident", incident);
     }
 
     // POST action to delete an incident
