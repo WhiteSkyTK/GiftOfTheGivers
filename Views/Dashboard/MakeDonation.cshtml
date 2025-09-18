@@ -1,0 +1,81 @@
+﻿@model Gift_Of_The_Givers_Web_App.ViewModels.MakeDonationViewModel
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Make a Donation";
+}
+
+<div data-aos="fade-up">
+    <h1>@ViewData["Title"]</h1>
+    <p class="lead">Your contribution helps us bring hope and restore dignity.</p>
+</div>
+
+<div class="card p-4 mt-4" data-aos="fade-up" data-aos-delay="100">
+    <form asp-action="MakeDonation" method="post">
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <div class="mb-4">
+            <h5 class="fw-bold">1. Choose Donation Type</h5>
+            <div class="form-check">
+                <input asp-for="DonationType" type="radio" value="Monetary" class="form-check-input" checked />
+                <label class="form-check-label">Monetary Donation</label>
+            </div>
+            <div class="form-check">
+                <input asp-for="DonationType" type="radio" value="Resource" class="form-check-input" />
+                <label class="form-check-label">Donate an Item/Resource</label>
+            </div>
+        </div>
+
+        <h5 class="fw-bold">2. Provide Details</h5>
+        <div class="mb-3">
+            <label asp-for="DisasterIncidentID" class="form-label"></label>
+            <select asp-for="DisasterIncidentID" asp-items="@Model.Incidents" class="form-select">
+                <option value="">Donate to General Fund</option>
+            </select>
+        </div>
+
+        <div id="monetaryFields">
+            <div class="mb-3">
+                <label asp-for="Amount" class="form-label"></label>
+                <input asp-for="Amount" class="form-control" placeholder="e.g., 250.00" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div id="resourceFields" style="display:none;">
+            <div class="mb-3">
+                <label asp-for="ResourceID" class="form-label"></label>
+                <select asp-for="ResourceID" asp-items="@Model.Resources" class="form-select">
+                    <option value="">-- Select an Item --</option>
+                </select>
+                <span asp-validation-for="ResourceID" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Quantity" class="form-label"></label>
+                <input asp-for="Quantity" type="number" class="form-control" placeholder="e.g., 10" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg mt-3">Submit Donation</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // JavaScript to toggle form fields
+        document.querySelectorAll('input[name="DonationType"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === 'Monetary') {
+                    document.getElementById('monetaryFields').style.display = 'block';
+                    document.getElementById('resourceFields').style.display = 'none';
+                } else {
+                    document.getElementById('monetaryFields').style.display = 'none';
+                    document.getElementById('resourceFields').style.display = 'block';
+                }
+            });
+        });
+    </script>
+}

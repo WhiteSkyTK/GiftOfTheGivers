@@ -152,6 +152,47 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin,Volunteer")]
+        public async Task<IActionResult> MyAssignments()
+        {
+            var userId = _userManager.GetUserId(User);
+            var assignments = await _context.VolunteerAssignments
+                .Where(va => va.VolunteerUserID == userId)
+                .Include(va => va.VolunteerTask).ThenInclude(vt => vt.DisasterIncident)
+                .ToListAsync();
+            return View(assignments);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Volunteer")]
+        public async Task<IActionResult> SignUpForTask(int taskId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var isAlreadyAssigned = await _context.VolunteerAssignments
+                .AnyAsync(va => va.TaskID == taskId && va.VolunteerUserID == userId);
+
+            if (!isAlreadyAssigned)
+            {
+                var assignment = new VolunteerAssignment
+                {
+                    VolunteerUserID = userId,
+                    TaskID = taskId,
+                    Status = "Assigned"
+                };
+                _context.VolunteerAssignments.Add(assignment);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Successfully signed up for the task!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "You are already signed up for this task.";
+            }
+
+            // To redirect back to the details page, we need the incident ID
+            var task = await _context.VolunteerTasks.FindAsync(taskId);
+            return RedirectToAction("ProjectDetails", new { incidentId = task.DisasterIncidentID });
+        }
+
         [Authorize]
         public async Task<IActionResult> MyIncidents()
         {
@@ -217,17 +258,121 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
         }
 
         [Authorize(Roles = "Admin,Volunteer")]
-        public async Task<IActionResult> ProjectDetails(int incidentId) // Assuming projects are linked to incidents
+        public async Task<IActionResult> ProjectDetails(int incidentId)
         {
-            // This logic will need to be expanded to get a ReliefProject and its tasks
             var project = await _context.DisasterIncidents
-                                        .Include(p => p.Tasks) // You'll need to include the tasks
+                                        .Include(p => p.Tasks)
                                         .FirstOrDefaultAsync(p => p.IncidentID == incidentId);
-            if (project == null)
-            {
-                return NotFound();
-            }
+            if (project == null) return NotFound();
             return View(project);
+        }
+
+        // GET action: Shows the donation form
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> MakeDonation(int? incidentId)
+        {
+            var viewModel = new MakeDonationViewModel
+            {
+                Incidents = await _context.DisasterIncidents
+                    .Where(i => i.Status == "Active")
+                    .Select(i => new SelectListItem { Text = i.Title, Value = i.IncidentID.ToString() })
+                    .ToListAsync(),
+                Resources = await _context.Resources
+                    .Select(r => new SelectListItem { Text = r.ResourceName, Value = r.ResourceID.ToString() })
+                    .ToListAsync(),
+                DisasterIncidentID = incidentId // Pre-select the incident if an ID was passed
+            };
+
+            return View(viewModel);
+        }
+
+        // POST action: Processes the submitted donation
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MakeDonation(MakeDonationViewModel model)
+        {
+            // --- ADD THIS CONDITIONAL VALIDATION LOGIC ---
+            if (model.DonationType == "Monetary")
+            {
+                if (!model.Amount.HasValue)
+                {
+                    ModelState.AddModelError(nameof(model.Amount), "Please enter a donation amount.");
+                }
+            }
+            else if (model.DonationType == "Resource")
+            {
+                if (!model.ResourceID.HasValue)
+                {
+                    ModelState.AddModelError(nameof(model.ResourceID), "Please select an item to donate.");
+                }
+                if (!model.Quantity.HasValue)
+                {
+                    ModelState.AddModelError(nameof(model.Quantity), "Please enter a quantity.");
+                }
+            }
+            // --- END OF ADDED LOGIC ---
+
+            if (!ModelState.IsValid)
+            {
+                // We MUST repopulate the dropdown lists before showing the form again
+                model.Incidents = await _context.DisasterIncidents
+                    .Where(i => i.Status == "Active")
+                    .Select(i => new SelectListItem { Text = i.Title, Value = i.IncidentID.ToString() })
+                    .ToListAsync();
+                model.Resources = await _context.Resources
+                    .Select(r => new SelectListItem { Text = r.ResourceName, Value = r.ResourceID.ToString() })
+                    .ToListAsync();
+
+                return View(model);
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            var newDonation = new Donation
+            {
+                DonorUserID = currentUser.Id,
+                DonationDate = DateTime.UtcNow,
+                DisasterIncidentID = model.DisasterIncidentID,
+                IsMonetary = model.DonationType == "Monetary",
+                // Use a conditional operator to set null if not applicable
+                Amount = model.DonationType == "Monetary" ? model.Amount : null,
+                ResourceID = model.DonationType == "Resource" ? model.ResourceID : null,
+                Quantity = model.DonationType == "Resource" ? model.Quantity : null
+            };
+
+            _context.Donations.Add(newDonation);
+
+            // If it's a monetary donation and linked to a project, update the project's funds
+            if (newDonation.IsMonetary && newDonation.DisasterIncidentID.HasValue)
+            {
+                var incident = await _context.DisasterIncidents.FindAsync(newDonation.DisasterIncidentID.Value);
+                if (incident != null)
+                {
+                    incident.CurrentFunds += newDonation.Amount ?? 0;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Thank you so much for your generous donation!";
+            return RedirectToAction("Index"); // Redirect to the dashboard
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MyDonations()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            // This query finds donations where the DonorUserID matches the current user's ID
+            var userDonations = await _context.Donations
+                .Where(d => d.DonorUserID == currentUser.Id)
+                .Include(d => d.DisasterIncident) // Include the project donated to
+                .Include(d => d.Resource) // Include the item that was donated
+                .OrderByDescending(d => d.DonationDate)
+                .ToListAsync();
+
+            return View(userDonations);
         }
     }
 }

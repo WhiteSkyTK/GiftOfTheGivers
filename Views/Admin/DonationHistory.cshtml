@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.Donation>
+@{
+    ViewData["Title"] = "Donation History";
+    Layout = "_DashboardLayout";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>A complete history of all donations made on the platform.</p>
+
+<table class="table table-striped table-hover mt-4">
+    <thead>
+        <tr>
+            <th>Donor</th>
+            <th>Project</th>
+            <th>Type</th>
+            <th>Amount / Item</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">There are no incidents in the system yet.</div>
+        }
+        @foreach (var donation in Model)
+        {
+            <tr>
+                <td>@donation.ApplicationUser?.Email</td>
+                <td>@(donation.DisasterIncident?.Title ?? "General Fund")</td>
+                <td>@(donation.IsMonetary ? "Monetary" : "Resource")</td>
+                <td>
+                    @if (donation.IsMonetary)
+                    {
+                        @donation.Amount?.ToString("C")
+                    }
+                    else
+                    {
+                        @($"{donation.Quantity}x {donation.Resource?.ResourceName}")
+                    }
+                </td>
+                <td>@donation.DonationDate.ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

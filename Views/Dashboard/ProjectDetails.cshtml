@@ -2,25 +2,74 @@
 
 @{
     Layout = "_DashboardLayout";
-    ViewData["Title"] = "Project Details";
+    ViewData["Title"] = Model.Title;
 }
 
-<h1>@Model.Title</h1>
-<p class="lead">@Model.Description</p>
-<hr />
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="display-5">@Model.Title</h1>
+        <p class="text-muted"><i class="bi bi-geo-alt-fill"></i> @Model.Location</p>
+        <img src="@(Model.ImageUrl ?? "/images/placeholder.jpg")" class="img-fluid rounded shadow-sm mb-4" alt="@Model.Title">
 
-<h3 class="mt-4">Available Tasks</h3>
-<table class="table">
-    <tbody>
-        @foreach (var task in Model.Tasks)
+        <h4>About this Project</h4>
+        <p>@Model.Description</p>
+
+        <h4 class="mt-4">Available Volunteer Tasks</h4>
+        @if (Model.Tasks != null && Model.Tasks.Any())
         {
-            <tr>
-                <td>@task.Title</td>
-                <td>@task.TaskDate.ToShortDateString()</td>
-                <td>
-                    <a href="#" class="btn btn-sm btn-success">Sign Up for this Task</a>
-                </td>
-            </tr>
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var task in Model.Tasks)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@task.Title</strong><br>
+                                <small class="text-muted">@task.Description</small>
+                            </td>
+                            <td>@task.TaskDate.ToShortDateString()</td>
+                            <td>
+                                <form asp-action="SignUpForTask" method="post">
+                                    <input type="hidden" name="taskId" value="@task.TaskID" />
+                                    <button type="submit" class="btn btn-sm btn-success">Sign Up for this Task</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
-    </tbody>
-</table>
+        else
+        {
+            <p class="text-muted">No specific tasks have been added for this project yet.</p>
+        }
+
+    </div>
+    <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-body">
+                <h5>Logistics</h5>
+                <p class="mb-1"><i class="bi bi-pin-map-fill"></i> <strong>Meeting Point:</strong> @(Model.MeetingPoint ?? "TBD")</p>
+                <p><i class="bi bi-person-fill"></i> <strong>On-site Contact:</strong> @(Model.OnSiteContact ?? "TBD")</p>
+                <hr />
+                <h5>Needed Resources</h5>
+                @if (Model.ResourceGoals != null && Model.ResourceGoals.Any())
+                {
+                    @foreach (var goal in Model.ResourceGoals)
+                    {
+                        <p class="mb-1">@goal.Resource.ResourceName (@goal.CurrentQuantity of @goal.GoalQuantity)</p>
+                        <div class="progress mb-3">
+                            @{
+                                var progress = (goal.GoalQuantity > 0) ? ((decimal)goal.CurrentQuantity / goal.GoalQuantity) * 100 : 0;
+                            }
+                            <div class="progress-bar" role="progressbar" style="width: @progress.ToString(System.Globalization.CultureInfo.InvariantCulture)%;"></div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No specific resource goals have been set.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

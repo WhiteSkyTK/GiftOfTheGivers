@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.Resource>
+@using Microsoft.AspNetCore.Identity
+@using Gift_Of_The_Givers_Web_App.Models
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Donate";
@@ -18,8 +21,16 @@
                 <div class="card h-100 text-center p-4">
                     <div class="card-icon"><i class="bi bi-cash-coin"></i></div>
                     <h3>Donate Monetarily</h3>
-                    <p>Financial contributions allow us the flexibility to respond quickly and purchase exactly what is needed most in a crisis.</p>
-                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mt-auto">Donate Funds</a>
+                    <p>Financial contributions allow us the flexibility to respond quickly...</p>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a asp-controller="Dashboard" asp-action="MakeDonation" class="btn btn-primary mt-auto">Donate Funds</a>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mt-auto">Donate Funds</a>
+                    }
                 </div>
             </div>
 
@@ -27,8 +38,16 @@
                 <div class="card h-100 text-center p-4">
                     <div class="card-icon"><i class="bi bi-box2-heart"></i></div>
                     <h3>Donate Resources</h3>
-                    <p>We gratefully accept donations of essential items. See our list of currently needed resources below.</p>
-                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mt-auto">Donate Goods</a>
+                    <p>We gratefully accept donations of essential items...</p>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a asp-controller="Dashboard" asp-action="MakeDonation" class="btn btn-primary mt-auto">Donate Goods</a>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mt-auto">Donate Goods</a>
+                    }
                 </div>
             </div>
         </div>

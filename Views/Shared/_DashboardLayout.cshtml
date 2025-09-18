@@ -39,6 +39,9 @@
         <h3 class="text-white mb-4">Dashboard</h3>
         <ul class="nav nav-pills flex-column">
             <li class="nav-item mb-2">
+                <a class="nav-link" asp-controller="Home" asp-action="Index" target="_blank"><i class="bi bi-box-arrow-up-right"></i> View Public Site</a>
+            </li>
+            <li class="nav-item mb-2">
                 <a class="nav-link" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2"></i> Dashboard Home</a>
             </li>
             <li class="nav-item mb-2">
@@ -49,6 +52,9 @@
             </li>
             <li class="nav-item mb-2">
                 <a class="nav-link" asp-controller="Dashboard" asp-action="ReportIncident"><i class="bi bi-exclamation-triangle"></i> Report Incident</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="MyDonations"><i class="bi bi-heart-fill"></i> My Donations</a>
             </li>
 
             @if (User.IsInRole("GeneralUser"))

@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.VolunteerAssignment>
+<h1>My Assignments</h1>
+<table class="table">
+    <tbody>
+        @foreach (var assignment in Model)
+        {
+            <tr>
+                <td>@assignment.VolunteerTask.DisasterIncident.Title</td>
+                <td>@assignment.VolunteerTask.Title</td>
+                <td>@assignment.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>

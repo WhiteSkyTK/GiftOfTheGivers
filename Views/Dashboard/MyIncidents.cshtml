@@ -9,6 +9,10 @@
 
 <table class="table table-striped table-hover mt-4">
     <tbody>
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">You have not reported any incidents yet.</div>
+        }
         @foreach (var item in Model)
         {
             <tr>

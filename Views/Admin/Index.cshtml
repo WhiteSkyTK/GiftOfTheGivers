@@ -30,4 +30,26 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card dashboard-card text-center h-100 p-3">
+            <div class="card-body">
+                <div class="card-icon"><i class="bi bi-card-list"></i></div>
+                <h3>Donation History</h3>
+                <p>View a log of all donations.</p>
+                <a asp-action="DonationHistory" class="btn btn-primary mt-auto">Go &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card dashboard-card text-center h-100 p-3">
+            <div class="card-body">
+                <div class="card-icon"><i class="bi bi-box-seam"></i></div>
+                <h3>Manage Resources</h3>
+                <p>Add or remove donatable items.</p>
+                <a asp-controller="Resources" asp-action="Index" class="btn btn-primary mt-auto">Go &rarr;</a>
+            </div>
+        </div>
+    </div>
 </div>

@@ -55,7 +55,7 @@
                                     }
                                     <div class="progress-bar" role="progressbar" style="width: @progressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%;" aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100">@progressPercent.ToString("0")%</div>
                                 </div>
-                                <a href="#" class="btn btn-primary">Donate to this Cause</a>
+                                <a asp-action="IncidentDetails" asp-route-incidentId="@incident.IncidentID" class="btn btn-primary">View Details</a>
                             </div>
                         </div>
                     </div>

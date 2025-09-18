@@ -17,6 +17,10 @@
             <th>Actions</th>
         </tr>
     <tbody>
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">There are no incidents in the system yet.</div>
+        }
         @foreach (var item in Model)
         {
             <tr>

@@ -27,7 +27,7 @@
     <div class="col-md-6">
         <h4>Add a New Task</h4>
         <form asp-action="AddTaskToIncident" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
 
             <input asp-for="NewTask.DisasterIncidentID" type="hidden" />
 
@@ -36,15 +36,19 @@
                 <input asp-for="NewTask.Title" class="form-control" />
                 <span asp-validation-for="NewTask.Title" class="text-danger"></span>
             </div>
+
+            <div class="mb-3">
+                <label asp-for="NewTask.Description" class="form-label"></label>
+                <textarea asp-for="NewTask.Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="NewTask.Description" class="text-danger"></span>
+            </div>
+
             <div class="mb-3">
                 <label asp-for="NewTask.TaskDate" class="form-label"></label>
                 <input asp-for="NewTask.TaskDate" type="date" class="form-control" />
                 <span asp-validation-for="NewTask.TaskDate" class="text-danger"></span>
             </div>
-            <div class="mb-3">
-                <label asp-for="NewTask.Description" class="form-label"></label>
-                <textarea asp-for="NewTask.Description" class="form-control" rows="3"></textarea>
-            </div>
+
             <button type="submit" class="btn btn-secondary">Add Task</button>
         </form>
     </div>

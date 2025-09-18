@@ -37,10 +37,14 @@ namespace Gift_Of_The_Givers_Web_App.Models
 
         [StringLength(50)]
         public string Status { get; set; } = string.Empty;
+        public string? MeetingPoint { get; set; }
+        public string? OnSiteContact { get; set; }
 
         // Navigation property
+        public virtual ICollection<Donation> Donations { get; set; } = new List<Donation>();
         public virtual ApplicationUser? ApplicationUser { get; set; }
         // Navigation property to hold all tasks for this incident
-        public virtual ICollection<VolunteerTask> Tasks { get; set; }
+        public virtual ICollection<VolunteerTask> Tasks { get; set; } = new List<VolunteerTask>();
+        public virtual ICollection<ResourceGoal> ResourceGoals { get; set; } = new List<ResourceGoal>();
     }
 }

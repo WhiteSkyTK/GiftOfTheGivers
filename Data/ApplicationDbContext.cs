@@ -9,13 +9,13 @@ namespace Gift_Of_The_Givers_Web_App.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<DisasterIncident> DisasterIncidents { get; set; }
-        public DbSet<ReliefProject> ReliefProjects { get; set; }
         public DbSet<Donation> Donations { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ProjectVolunteer> ProjectVolunteers { get; set; }
         public DbSet<VolunteerTask> VolunteerTasks { get; set; }
         public DbSet<ResourceGoal> ResourceGoals { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<VolunteerAssignment> VolunteerAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,25 +25,27 @@ namespace Gift_Of_The_Givers_Web_App.Data
             modelBuilder.Entity<ProjectVolunteer>()
                 .HasKey(pv => new { pv.DisasterIncidentID, pv.VolunteerUserID });
 
-            // --- ADD THIS BLOCK TO PREVENT CASCADE DELETE CYCLES ---
+            modelBuilder.Entity<VolunteerAssignment>()
+                .HasKey(va => new { va.VolunteerUserID, va.TaskID });
+
             modelBuilder.Entity<ProjectVolunteer>()
                 .HasOne(pv => pv.ApplicationUser)
                 .WithMany()
                 .HasForeignKey(pv => pv.VolunteerUserID)
-                .OnDelete(DeleteBehavior.Restrict); // Important
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProjectVolunteer>()
                 .HasOne(pv => pv.DisasterIncident)
                 .WithMany()
                 .HasForeignKey(pv => pv.DisasterIncidentID)
-                .OnDelete(DeleteBehavior.Restrict); // Important
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<DisasterIncident>()
                 .HasOne(di => di.ApplicationUser)
                 .WithMany()
                 .HasForeignKey(di => di.ReportedByUserID)
-                .OnDelete(DeleteBehavior.Restrict); // Important
-                                                    // --- END OF BLOCK ---
+                .OnDelete(DeleteBehavior.Restrict); 
+                                                   
         }
     }
 }

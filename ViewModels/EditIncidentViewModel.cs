@@ -7,10 +7,12 @@ namespace Gift_Of_The_Givers_Web_App.ViewModels
         public int IncidentID { get; set; }
         public string ReportedByUserID { get; set; }
 
-        [Required, StringLength(100)]
+        [Required]
+        [StringLength(100)]
         public string Title { get; set; }
 
-        [Required, StringLength(255)]
+        [Required] 
+        [StringLength(255)]
         public string Location { get; set; }
 
         public string? Description { get; set; }

@@ -75,5 +75,21 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
             // If the form is invalid, show it again with the errors
             return View(contactMessage);
         }
+
+        public async Task<IActionResult> IncidentDetails(int incidentId)
+        {
+            var incident = await _context.DisasterIncidents
+                .Include(i => i.Donations) // Include the list of donations for this incident
+                    .ThenInclude(d => d.ApplicationUser) // Also include the user for each donation
+                .Include(i => i.Donations)
+                    .ThenInclude(d => d.Resource) // And the resource for each donation
+                .FirstOrDefaultAsync(i => i.IncidentID == incidentId);
+
+            if (incident == null)
+            {
+                return NotFound();
+            }
+            return View(incident);
+        }
     }
 }
