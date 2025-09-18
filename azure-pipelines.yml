@@ -1,0 +1,36 @@
+# This pipeline builds an ASP.NET Core application.
+
+trigger:
+- master  # This pipeline will automatically run on any push to the 'master' branch
+
+pool:
+  vmImage: 'windows-latest' # Use a Microsoft-hosted Windows machine
+
+variables:
+  solution: '**/*.sln' # Automatically find your solution file
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Install NuGet'
+
+- task: NuGetCommand@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
