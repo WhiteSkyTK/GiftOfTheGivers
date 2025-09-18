@@ -11,8 +11,8 @@ namespace Gift_Of_The_Givers_Web_App.Models
         [ForeignKey("ApplicationUser")]
         public string DonorUserID { get; set; }
 
-        [ForeignKey("ReliefProject")]
-        public int? ProjectID { get; set; } // Nullable
+        [ForeignKey("DisasterIncident")]
+        public int? DisasterIncidentID { get; set; }
 
         public bool IsMonetary { get; set; }
 
@@ -26,9 +26,8 @@ namespace Gift_Of_The_Givers_Web_App.Models
 
         public DateTime DonationDate { get; set; }
 
-        // Navigation properties
         public virtual ApplicationUser? ApplicationUser { get; set; }
-        public virtual ReliefProject? ReliefProject { get; set; }
         public virtual Resource? Resource { get; set; }
+        public virtual DisasterIncident? DisasterIncident { get; set; }
     }
 }

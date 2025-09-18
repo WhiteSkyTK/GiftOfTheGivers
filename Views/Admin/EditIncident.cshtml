@@ -1,7 +1,15 @@
-﻿@model Gift_Of_The_Givers_Web_App.ViewModels.EditIncidentViewModel
+﻿@model Gift_Of_The_Givers_Web_App.Models.DisasterIncident
 @{
     ViewData["Title"] = "Edit Incident";
     Layout = "_DashboardLayout";
+
+    // Create a list for the Status dropdown
+    var statusOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Pending Verification", Value = "Pending Verification" },
+        new SelectListItem { Text = "Active", Value = "Active" },
+        new SelectListItem { Text = "Closed", Value = "Closed" }
+    };
 }
 
 <div data-aos="fade-up">
@@ -13,10 +21,9 @@
 <div class="card p-4 mt-4" data-aos="fade-up" data-aos-delay="100">
     <form asp-action="EditIncident" method="post">
         <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
         <input type="hidden" asp-for="IncidentID" />
         <input type="hidden" asp-for="ReportedByUserID" />
-
+        <input type="hidden" asp-for="IncidentDate" /> <h4>Incident Details</h4>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label asp-for="Title" class="form-label fw-bold"></label>
@@ -27,37 +34,70 @@
                 <input asp-for="Location" class="form-control" />
             </div>
         </div>
-
         <div class="mb-3">
             <label asp-for="Description" class="form-label fw-bold"></label>
-            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
         </div>
-
-        <div class="mb-3">
-            <label asp-for="ImageUrl" class="form-label fw-bold"></label>
-            <input asp-for="ImageUrl" class="form-control" />
-        </div>
-
         <div class="row">
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
                 <label asp-for="FundingGoal" class="form-label fw-bold"></label>
-                <input asp-for="FundingGoal" class="form-control" />
+                <input asp-for="FundingGoal" type="number" step="0.01" class="form-control" />
             </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="CurrentFunds" class="form-label fw-bold"></label>
-                <input asp-for="CurrentFunds" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
                 <label asp-for="Status" class="form-label fw-bold"></label>
-                <select asp-for="Status" class="form-select">
-                    <option value="Pending Verification">Pending Verification</option>
-                    <option value="Active">Active</option>
-                    <option value="Closed">Closed</option>
-                </select>
+                <select asp-for="Status" asp-items="statusOptions" class="form-select"></select>
+            </div>
+        </div>
+        <h4 class="mt-4">Logistics Information</h4>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="MeetingPoint" class="form-label fw-bold"></label>
+                <input asp-for="MeetingPoint" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="OnSiteContact" class="form-label fw-bold"></label>
+                <input asp-for="OnSiteContact" class="form-control" />
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary">Save All Changes</button>
         <a asp-action="ManageIncidents" class="btn btn-secondary">Cancel</a>
     </form>
+
+    <hr class="my-5" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Existing Resource Goals</h4>
+            @if (Model.ResourceGoals != null && Model.ResourceGoals.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var goal in Model.ResourceGoals)
+                    {
+                        <li class="list-group-item">@goal.Resource.ResourceName (@goal.CurrentQuantity of @goal.GoalQuantity)</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">No resource goals have been set for this incident.</p>
+            }
+        </div>
+        <div class="col-md-6">
+            <h4>Add a New Resource Goal</h4>
+            <form asp-action="AddResourceGoal" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" name="DisasterIncidentID" value="@Model.IncidentID" />
+                <div class="mb-3">
+                    <label class="form-label">Resource</label>
+                    <select name="ResourceID" class="form-select" asp-items="@(ViewBag.Resources)"></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Goal Quantity</label>
+                    <input type="number" name="GoalQuantity" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-secondary">Add Goal</button>
+            </form>
+        </div>
+    </div>
 </div>

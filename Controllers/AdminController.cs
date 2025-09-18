@@ -4,6 +4,7 @@ using Gift_Of_The_Givers_Web_App.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 [Authorize(Roles = "Admin")]
@@ -32,48 +33,48 @@ public class AdminController : Controller
         return View(allIncidents);
     }
 
-    //[HttpGet] IncidentDetails action
     public async Task<IActionResult> IncidentDetails(int incidentId)
     {
         var incident = await _context.DisasterIncidents
                                      .Include(i => i.Tasks)
+                                     .Include(i => i.ApplicationUser)
                                      .FirstOrDefaultAsync(i => i.IncidentID == incidentId);
         if (incident == null)
         {
             return NotFound();
         }
 
-        var model = new AdminIncidentDetailsViewModel
+        // CREATE THE VIEWMODEL and pass it to the view
+        var viewModel = new AdminIncidentDetailsViewModel
         {
             Incident = incident,
             NewTask = new VolunteerTask { DisasterIncidentID = incidentId, TaskDate = DateTime.Today }
         };
 
-        return View(model);
+        return View(viewModel);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddTaskToIncident(AdminIncidentDetailsViewModel model)
     {
-        // We only need to check if the NewTask part of the model is valid
-        if (ModelState.IsValid)
+        // THIS IS THE FIX for when validation fails
+        // We must check the validation state of the NewTask property specifically
+        if (!ModelState.IsValid)
         {
-            // Add the new task to the context
-            _context.VolunteerTasks.Add(model.NewTask);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Task added successfully!";
-            return RedirectToAction("IncidentDetails", new { incidentId = model.NewTask.DisasterIncidentID });
+            // We must reload the main incident data before showing the page again
+            model.Incident = await _context.DisasterIncidents
+                                           .Include(i => i.Tasks)
+                                           .FirstOrDefaultAsync(i => i.IncidentID == model.NewTask.DisasterIncidentID);
+
+            TempData["ErrorMessage"] = "Failed to add task. Please check the form for errors.";
+            return View("IncidentDetails", model);
         }
 
-        // --- If validation fails, do this instead of redirecting ---
-        // We must reload the main incident data before showing the page again
-        model.Incident = await _context.DisasterIncidents
-                                       .Include(i => i.Tasks)
-                                       .FirstOrDefaultAsync(i => i.IncidentID == model.NewTask.DisasterIncidentID);
-
-        // Return to the same view, which will now show validation errors
-        return View("IncidentDetails", model);
+        _context.VolunteerTasks.Add(model.NewTask);
+        await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Task added successfully!";
+        return RedirectToAction("IncidentDetails", new { incidentId = model.NewTask.DisasterIncidentID });
     }
 
     [HttpPost]
@@ -115,62 +116,66 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> EditIncident(int incidentId)
     {
-        var incident = await _context.DisasterIncidents.FindAsync(incidentId);
-        if (incident == null)
-        {
-            return NotFound();
-        }
+        var incident = await _context.DisasterIncidents
+            .Include(i => i.ResourceGoals).ThenInclude(rg => rg.Resource)
+            .FirstOrDefaultAsync(i => i.IncidentID == incidentId);
 
-        // Create a ViewModel from the database model
-        var viewModel = new EditIncidentViewModel
-        {
-            IncidentID = incident.IncidentID,
-            ReportedByUserID = incident.ReportedByUserID,
-            Title = incident.Title,
-            Location = incident.Location,
-            Description = incident.Description,
-            ImageUrl = incident.ImageUrl,
-            FundingGoal = incident.FundingGoal,
-            CurrentFunds = incident.CurrentFunds,
-            Status = incident.Status
-        };
+        if (incident == null) return NotFound();
 
-        return View(viewModel);
+        // This ViewBag is essential for the "Add Resource Goal" dropdown
+        ViewBag.Resources = await _context.Resources
+                                          .Select(r => new SelectListItem { Text = r.ResourceName, Value = r.ResourceID.ToString() })
+                                          .ToListAsync();
+        return View(incident);
     }
 
-    // GET action for the Edit page
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditIncident(EditIncidentViewModel viewModel)
+    public async Task<IActionResult> EditIncident(DisasterIncident incident)
     {
         if (ModelState.IsValid)
         {
-            // 1. Load the original incident from the database
-            var incidentToUpdate = await _context.DisasterIncidents.FindAsync(viewModel.IncidentID);
-
-            if (incidentToUpdate == null)
+            // --- This is a safer way to update to prevent losing data ---
+            var incidentFromDb = await _context.DisasterIncidents.FindAsync(incident.IncidentID);
+            if (incidentFromDb == null)
             {
                 return NotFound();
             }
 
-            // 2. Update its properties with the values from the form
-            incidentToUpdate.Title = viewModel.Title;
-            incidentToUpdate.Location = viewModel.Location;
-            incidentToUpdate.Description = viewModel.Description;
-            incidentToUpdate.ImageUrl = viewModel.ImageUrl;
-            incidentToUpdate.FundingGoal = viewModel.FundingGoal;
-            incidentToUpdate.CurrentFunds = viewModel.CurrentFunds;
-            incidentToUpdate.Status = viewModel.Status;
+            // Map the updated values from the form to the existing incident
+            incidentFromDb.Title = incident.Title;
+            incidentFromDb.Location = incident.Location;
+            incidentFromDb.Description = incident.Description;
+            incidentFromDb.FundingGoal = incident.FundingGoal;
+            incidentFromDb.Status = incident.Status;
+            incidentFromDb.MeetingPoint = incident.MeetingPoint;
+            incidentFromDb.OnSiteContact = incident.OnSiteContact;
 
-            // 3. Save the changes
+            _context.Update(incidentFromDb);
             await _context.SaveChangesAsync();
-
             TempData["SuccessMessage"] = "Incident updated successfully!";
             return RedirectToAction("ManageIncidents");
         }
 
-        // If the model is not valid, return to the view with the current data to show errors
-        return View(viewModel);
+        // --- If validation fails, we MUST reload the ViewBag data ---
+        ViewBag.Resources = await _context.Resources
+            .Select(r => new SelectListItem { Text = r.ResourceName, Value = r.ResourceID.ToString() })
+            .ToListAsync();
+
+        return View(incident);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddResourceGoal(ResourceGoal resourceGoal)
+    {
+        if (ModelState.IsValid)
+        {
+            _context.ResourceGoals.Add(resourceGoal);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Resource goal added successfully!";
+        }
+        return RedirectToAction("EditIncident", new { incidentId = resourceGoal.DisasterIncidentID });
     }
 
     // POST action to delete an incident
@@ -196,5 +201,17 @@ public class AdminController : Controller
             await _context.SaveChangesAsync();
         }
         return RedirectToAction("ManageIncidents");
+    }
+
+    public async Task<IActionResult> DonationHistory()
+    {
+        var allDonations = await _context.Donations
+            .Include(d => d.ApplicationUser) // Include the user who donated
+            .Include(d => d.DisasterIncident) // Include the project donated to
+            .Include(d => d.Resource) // Include the item that was donated
+            .OrderByDescending(d => d.DonationDate)
+            .ToListAsync();
+
+        return View(allDonations);
     }
 }

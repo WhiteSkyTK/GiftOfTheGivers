@@ -1,0 +1,55 @@
+﻿@model Gift_Of_The_Givers_Web_App.Models.DisasterIncident
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<section class="page-hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('@(Model.ImageUrl ?? "/images/placeholder.jpg")');">
+    <div class="container" data-aos="fade-up">
+        <h1 class="display-4">@Model.Title</h1>
+        <p class="lead">@Model.Location</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h3>About this Project</h3>
+                <p>@Model.Description</p>
+                <h4 class="mt-5">Recent Donations</h4>
+                <ul class="list-group list-group-flush">
+                    @foreach (var donation in Model.Donations.OrderByDescending(d => d.DonationDate).Take(10))
+                    {
+                        <li class="list-group-item">
+                            <strong>@(donation.ApplicationUser?.FirstName ?? "Anonymous")</strong> donated
+                            @if (donation.IsMonetary)
+                            {
+                                <strong>@donation.Amount?.ToString("C")</strong>
+                            }
+                            else
+                            {
+
+                                <strong>@donation.Quantity x @donation.Resource?.ResourceName</strong>
+                            }
+                            <span class="text-muted float-end">@donation.DonationDate.ToShortDateString()</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="mb-1">@Model.CurrentFunds.ToString("C") raised of @Model.FundingGoal.ToString("C") goal</p>
+                        <div class="progress mb-3">
+                            @{
+                                var progressPercent = (Model.FundingGoal > 0) ? (Model.CurrentFunds / Model.FundingGoal) * 100 : 0;
+                            }
+                            <div class="progress-bar" role="progressbar" style="width: @progressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%;">@progressPercent.ToString("0")%</div>
+                        </div>
+                        <a asp-controller="Dashboard" asp-action="MakeDonation" asp-route-incidentId="@Model.IncidentID" class="btn btn-primary w-100">Donate to this Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

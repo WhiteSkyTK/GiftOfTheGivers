@@ -4,6 +4,7 @@ using Gift_Of_The_Givers_Web_App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gift_Of_The_Givers_Web_App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250918175253_ConsolidateProjectAndIncidentModels")]
+    partial class ConsolidateProjectAndIncidentModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,12 +173,6 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.Property<decimal>("Longitude")
                         .HasColumnType("decimal(9, 6)");
 
-                    b.Property<string>("MeetingPoint")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OnSiteContact")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ReportedByUserID")
                         .HasColumnType("nvarchar(450)");
 
@@ -302,25 +299,6 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.HasIndex("ResourceID");
 
                     b.ToTable("ResourceGoals");
-                });
-
-            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.VolunteerAssignment", b =>
-                {
-                    b.Property<string>("VolunteerUserID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("TaskID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("VolunteerUserID", "TaskID");
-
-                    b.HasIndex("TaskID");
-
-                    b.ToTable("VolunteerAssignments");
                 });
 
             modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.VolunteerTask", b =>
@@ -540,7 +518,7 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
             modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.ResourceGoal", b =>
                 {
                     b.HasOne("Gift_Of_The_Givers_Web_App.Models.DisasterIncident", "DisasterIncident")
-                        .WithMany("ResourceGoals")
+                        .WithMany()
                         .HasForeignKey("DisasterIncidentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -554,25 +532,6 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
                     b.Navigation("DisasterIncident");
 
                     b.Navigation("Resource");
-                });
-
-            modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.VolunteerAssignment", b =>
-                {
-                    b.HasOne("Gift_Of_The_Givers_Web_App.Models.VolunteerTask", "VolunteerTask")
-                        .WithMany()
-                        .HasForeignKey("TaskID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Gift_Of_The_Givers_Web_App.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("VolunteerUserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("VolunteerTask");
                 });
 
             modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.VolunteerTask", b =>
@@ -640,8 +599,6 @@ namespace Gift_Of_The_Givers_Web_App.Migrations
             modelBuilder.Entity("Gift_Of_The_Givers_Web_App.Models.DisasterIncident", b =>
                 {
                     b.Navigation("Donations");
-
-                    b.Navigation("ResourceGoals");
 
                     b.Navigation("Tasks");
                 });
