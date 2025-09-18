@@ -1,14 +1,39 @@
 ﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.VolunteerAssignment>
-<h1>My Assignments</h1>
-<table class="table">
-    <tbody>
-        @foreach (var assignment in Model)
-        {
-            <tr>
-                <td>@assignment.VolunteerTask.DisasterIncident.Title</td>
-                <td>@assignment.VolunteerTask.Title</td>
-                <td>@assignment.Status</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@{
+    ViewData["Title"] = "My Assignments";
+    Layout = "_DashboardLayout";
+}
+
+<partial name="_StatusMessage" model="@(TempData["SuccessMessage"] as string)" />
+<partial name="_StatusMessage" model="@(TempData["ErrorMessage"] as string)" />
+
+<h1>@ViewData["Title"]</h1>
+<p>Here are the tasks you have signed up for. Thank you for your commitment!</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-4">You have not signed up for any tasks yet. Browse the <a asp-action="VolunteerHub">Volunteer Hub</a> to find opportunities.</div>
+}
+else
+{
+    @foreach (var assignment in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>Project:</strong> @assignment.VolunteerTask.DisasterIncident.Title
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@assignment.VolunteerTask.Title</h5>
+                <p class="card-text">@assignment.VolunteerTask.Description</p>
+                <hr />
+                <h6 class="card-subtitle mb-2 text-muted">Logistics</h6>
+                <p class="mb-1"><strong>Date:</strong> @assignment.VolunteerTask.TaskDate.ToShortDateString()</p>
+                <p class="mb-1"><strong>Meeting Point:</strong> @(assignment.VolunteerTask.DisasterIncident.MeetingPoint ?? "To be confirmed")</p>
+                <p class="mb-0"><strong>On-site Contact:</strong> @(assignment.VolunteerTask.DisasterIncident.OnSiteContact ?? "To be confirmed")</p>
+            </div>
+            <div class="card-footer">
+                Status: <span class="badge bg-success">@assignment.Status</span>
+            </div>
+        </div>
+    }
+}

@@ -37,8 +37,9 @@
                 </ul>
             </div>
             <div class="col-lg-4">
-                <div class="card">
+                <div class="card sticky-top" style="top: 20px;">
                     <div class="card-body">
+                        <h5 class="card-title">Project Status</h5>
                         <p class="mb-1">@Model.CurrentFunds.ToString("C") raised of @Model.FundingGoal.ToString("C") goal</p>
                         <div class="progress mb-3">
                             @{
@@ -47,6 +48,31 @@
                             <div class="progress-bar" role="progressbar" style="width: @progressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%;">@progressPercent.ToString("0")%</div>
                         </div>
                         <a asp-controller="Dashboard" asp-action="MakeDonation" asp-route-incidentId="@Model.IncidentID" class="btn btn-primary w-100">Donate to this Project</a>
+
+                        <hr />
+
+                        <h5>Needed Resources</h5>
+                        @if (Model.ResourceGoals.Any())
+                        {
+                            @foreach (var goal in Model.ResourceGoals)
+                            {
+                                <p class="mb-1">@goal.Resource.ResourceName (@goal.CurrentQuantity of @goal.GoalQuantity)</p>
+                                <div class="progress mb-3">
+                                    @{
+                                        var progress = (goal.GoalQuantity > 0) ? ((decimal)goal.CurrentQuantity / goal.GoalQuantity) * 100 : 0;
+                                    }
+                                    <div class="progress-bar" role="progressbar" style="width: @progress.ToString(System.Globalization.CultureInfo.InvariantCulture)%;"></div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No specific resource goals have been set.</p>
+                        }
+
+                        <hr />
+                        <h5>Drop-off Location</h5>
+                        <p class="text-muted">Please deliver physical donations to: <br><strong>@(Model.MeetingPoint ?? "To be confirmed")</strong></p>
                     </div>
                 </div>
             </div>

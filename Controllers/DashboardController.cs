@@ -23,8 +23,10 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
 
         // Main dashboard page
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // Run the check for overdue tasks first
+            await UpdateOverdueTasks();
             return View();
         }
 
@@ -158,7 +160,9 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
             var userId = _userManager.GetUserId(User);
             var assignments = await _context.VolunteerAssignments
                 .Where(va => va.VolunteerUserID == userId)
-                .Include(va => va.VolunteerTask).ThenInclude(vt => vt.DisasterIncident)
+                .Include(va => va.VolunteerTask) // Load the task details
+                    .ThenInclude(vt => vt.DisasterIncident) // And for each task, load the main incident details
+                .OrderBy(va => va.VolunteerTask.TaskDate) // Order by the upcoming date
                 .ToListAsync();
             return View(assignments);
         }
@@ -188,9 +192,8 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                 TempData["ErrorMessage"] = "You are already signed up for this task.";
             }
 
-            // To redirect back to the details page, we need the incident ID
-            var task = await _context.VolunteerTasks.FindAsync(taskId);
-            return RedirectToAction("ProjectDetails", new { incidentId = task.DisasterIncidentID });
+            // Redirect back to the volunteer hub
+            return RedirectToAction("MyAssignments");
         }
 
         [Authorize]
@@ -262,6 +265,8 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
         {
             var project = await _context.DisasterIncidents
                                         .Include(p => p.Tasks)
+                                        .Include(p => p.ResourceGoals) // THIS IS THE FIX: Include the goals
+                                            .ThenInclude(rg => rg.Resource) // And for each goal, include the resource details
                                         .FirstOrDefaultAsync(p => p.IncidentID == incidentId);
             if (project == null) return NotFound();
             return View(project);
@@ -293,12 +298,12 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MakeDonation(MakeDonationViewModel model)
         {
-            // --- ADD THIS CONDITIONAL VALIDATION LOGIC ---
+            // Conditional validation logic based on DonationType
             if (model.DonationType == "Monetary")
             {
-                if (!model.Amount.HasValue)
+                if (!model.Amount.HasValue || model.Amount < 10) // Added minimum check
                 {
-                    ModelState.AddModelError(nameof(model.Amount), "Please enter a donation amount.");
+                    ModelState.AddModelError(nameof(model.Amount), "Donation amount must be at least R10.");
                 }
             }
             else if (model.DonationType == "Resource")
@@ -307,16 +312,15 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                 {
                     ModelState.AddModelError(nameof(model.ResourceID), "Please select an item to donate.");
                 }
-                if (!model.Quantity.HasValue)
+                if (!model.Quantity.HasValue || model.Quantity < 1) // Added minimum check
                 {
-                    ModelState.AddModelError(nameof(model.Quantity), "Please enter a quantity.");
+                    ModelState.AddModelError(nameof(model.Quantity), "Quantity must be at least 1.");
                 }
             }
-            // --- END OF ADDED LOGIC ---
 
             if (!ModelState.IsValid)
             {
-                // We MUST repopulate the dropdown lists before showing the form again
+                // Repopulate the dropdown lists before showing the form again
                 model.Incidents = await _context.DisasterIncidents
                     .Where(i => i.Status == "Active")
                     .Select(i => new SelectListItem { Text = i.Title, Value = i.IncidentID.ToString() })
@@ -335,7 +339,6 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                 DonationDate = DateTime.UtcNow,
                 DisasterIncidentID = model.DisasterIncidentID,
                 IsMonetary = model.DonationType == "Monetary",
-                // Use a conditional operator to set null if not applicable
                 Amount = model.DonationType == "Monetary" ? model.Amount : null,
                 ResourceID = model.DonationType == "Resource" ? model.ResourceID : null,
                 Quantity = model.DonationType == "Resource" ? model.Quantity : null
@@ -343,7 +346,7 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
 
             _context.Donations.Add(newDonation);
 
-            // If it's a monetary donation and linked to a project, update the project's funds
+            // If it's a monetary donation, update the incident's funds
             if (newDonation.IsMonetary && newDonation.DisasterIncidentID.HasValue)
             {
                 var incident = await _context.DisasterIncidents.FindAsync(newDonation.DisasterIncidentID.Value);
@@ -352,6 +355,21 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                     incident.CurrentFunds += newDonation.Amount ?? 0;
                 }
             }
+            // --- ADD THIS LOGIC to handle resource donations ---
+            else if (!newDonation.IsMonetary && newDonation.DisasterIncidentID.HasValue && newDonation.ResourceID.HasValue)
+            {
+                // Find the specific resource goal for this incident
+                var resourceGoal = await _context.ResourceGoals.FirstOrDefaultAsync(
+                    rg => rg.DisasterIncidentID == newDonation.DisasterIncidentID.Value &&
+                          rg.ResourceID == newDonation.ResourceID.Value);
+
+                // If a goal exists, update its current quantity
+                if (resourceGoal != null)
+                {
+                    resourceGoal.CurrentQuantity += newDonation.Quantity ?? 0;
+                }
+            }
+            // --- END OF ADDED LOGIC ---
 
             await _context.SaveChangesAsync();
 
@@ -373,6 +391,26 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                 .ToListAsync();
 
             return View(userDonations);
+        }
+
+        private async Task UpdateOverdueTasks()
+        {
+            var today = DateTime.UtcNow.Date;
+
+            // Find all assignments that are still "Assigned" but whose task date is in the past
+            var overdueAssignments = await _context.VolunteerAssignments
+                .Include(va => va.VolunteerTask) // We need to include the task to check its date
+                .Where(va => va.Status == "Assigned" && va.VolunteerTask.TaskDate < today)
+                .ToListAsync();
+
+            if (overdueAssignments.Any())
+            {
+                foreach (var assignment in overdueAssignments)
+                {
+                    assignment.Status = "Completed";
+                }
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
