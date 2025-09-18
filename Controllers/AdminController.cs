@@ -19,9 +19,31 @@ public class AdminController : Controller
         _userManager = userManager;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        // Run the check for overdue tasks first
+        await UpdateOverdueTasks();
         return View();
+    }
+
+    private async Task UpdateOverdueTasks()
+    {
+        var today = DateTime.UtcNow.Date;
+
+        // Find all assignments that are still "Assigned" but whose task date is in the past
+        var overdueAssignments = await _context.VolunteerAssignments
+            .Include(va => va.VolunteerTask)
+            .Where(va => va.Status == "Assigned" && va.VolunteerTask.TaskDate < today)
+            .ToListAsync();
+
+        if (overdueAssignments.Any())
+        {
+            foreach (var assignment in overdueAssignments)
+            {
+                assignment.Status = "Completed";
+            }
+            await _context.SaveChangesAsync();
+        }
     }
 
     public async Task<IActionResult> ManageIncidents()

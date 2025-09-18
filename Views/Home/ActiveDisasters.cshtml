@@ -55,7 +55,13 @@
                                     }
                                     <div class="progress-bar" role="progressbar" style="width: @progressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%;" aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100">@progressPercent.ToString("0")%</div>
                                 </div>
-                                <a asp-action="IncidentDetails" asp-route-incidentId="@incident.IncidentID" class="btn btn-primary">View Details</a>
+                                @if (incident.ResourceGoals.Any())
+                                {
+                                    var topGoal = incident.ResourceGoals.First();
+                                    <p class="mb-1 mt-2"><strong>Needed:</strong> @topGoal.Resource.ResourceName (@topGoal.CurrentQuantity of @topGoal.GoalQuantity)</p>
+                                }
+
+                                <a asp-action="IncidentDetails" asp-route-incidentId="@incident.IncidentID" class="btn btn-primary mt-2">View Details</a>
                             </div>
                         </div>
                     </div>

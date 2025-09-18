@@ -27,9 +27,10 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
 
         public async Task<IActionResult> ActiveDisasters()
         {
-            // Fetch all incidents from the database
             var incidents = await _context.DisasterIncidents
-                                          .Where(i => i.Status == "Active") // Or another status you want to show
+                                          // This tells EF to also load the related ResourceGoals and the Resource name for each goal
+                                          .Include(i => i.ResourceGoals).ThenInclude(rg => rg.Resource)
+                                          .Where(i => i.Status == "Active")
                                           .ToListAsync();
             return View(incidents);
         }
@@ -83,6 +84,8 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                     .ThenInclude(d => d.ApplicationUser) // Also include the user for each donation
                 .Include(i => i.Donations)
                     .ThenInclude(d => d.Resource) // And the resource for each donation
+                .Include(i => i.ResourceGoals)
+                    .ThenInclude(rg => rg.Resource)
                 .FirstOrDefaultAsync(i => i.IncidentID == incidentId);
 
             if (incident == null)

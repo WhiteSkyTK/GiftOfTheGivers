@@ -57,23 +57,24 @@ else
 </div>
 
 <div class="mt-5" data-aos="fade-up" data-aos-delay="200">
-    <h3 class="mb-3">Your Active Assignments</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Your Active Assignments</h3>
+        <a asp-action="MyAssignments" class="btn btn-outline-primary">View All My Assignments</a>
+    </div>
+
     @if (!Model.MyAssignments.Any())
     {
         <p>You are not currently signed up for any assignments.</p>
     }
     else
     {
-        @foreach (var assignment in Model.MyAssignments)
-        {
-            <div class="card active-assignment-card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">@assignment.Title</h5>
-                    <p class="card-text text-muted">Location: @assignment.Location</p>
-                    <a asp-action="AssignmentDetails" asp-route-incidentId="@assignment.IncidentID" class="btn btn-sm btn-outline-dark">View Assignment Details</a>
-                </div>
+        var nextAssignment = Model.MyAssignments.OrderBy(a => a.IncidentDate).First();
+        <div class="card active-assignment-card">
+            <div class="card-body">
+                <h5 class="card-title">Next Up: @nextAssignment.Title</h5>
+                <p class="card-text text-muted">Location: @nextAssignment.Location</p>
             </div>
-        }
+        </div>
     }
 </div>
 
@@ -102,8 +103,8 @@ else
                         <div class="col-md-3 text-md-end mt-3 mt-md-0">
                             <form asp-action="SignUpForIncident" method="post">
                                 <input type="hidden" name="incidentId" value="@opportunity.IncidentID" />
-                                <a asp-action="ProjectDetails" asp-route-incidentId="@opportunity.IncidentID" class="btn btn-primary">View Details</a>
-                                <button type="submit" class="btn btn-primary">Sign Up</button>
+                                <a asp-action="ProjectDetails" asp-route-incidentId="@opportunity.IncidentID" class="btn btn-primary">View & Sign Up for Tasks</a>
+                                <!--button type="submit" class="btn btn-primary">Sign Up</button>-->
                             </form>
                         </div>
                     </div>
