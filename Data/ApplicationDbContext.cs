@@ -16,6 +16,8 @@ namespace Gift_Of_The_Givers_Web_App.Data
         public DbSet<ResourceGoal> ResourceGoals { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<VolunteerAssignment> VolunteerAssignments { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -260,4 +260,87 @@ public class AdminController : Controller
 
         return View(allDonations);
     }
+
+    // GET action: Prepares and shows the communication form
+    [HttpGet]
+    public async Task<IActionResult> CommunicationCenter()
+    {
+        var viewModel = new SendMessageViewModel
+        {
+            // Populate dropdown for project-specific messages
+            Incidents = await _context.DisasterIncidents
+                .Where(i => i.Status == "Active")
+                .Select(i => new SelectListItem { Text = i.Title, Value = i.IncidentID.ToString() })
+                .ToListAsync(),
+
+            // Populate dropdown for direct messages
+            Volunteers = await _userManager.Users
+                .Select(u => new SelectListItem { Text = $"{u.FirstName} {u.LastName} ({u.Email})", Value = u.Id })
+                .ToListAsync()
+        };
+        return View(viewModel);
+    }
+
+    // POST action: Sends the message
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendMessage(SendMessageViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            // If validation fails, repopulate dropdowns and return to the view
+            model.Incidents = await _context.DisasterIncidents.Where(i => i.Status == "Active").Select(i => new SelectListItem { Text = i.Title, Value = i.IncidentID.ToString() }).ToListAsync();
+            model.Volunteers = await _userManager.Users.Select(u => new SelectListItem { Text = $"{u.FirstName} {u.LastName} ({u.Email})", Value = u.Id }).ToListAsync();
+            return View("CommunicationCenter", model);
+        }
+
+        // 1. Create the main notification message
+        var notification = new Notification
+        {
+            Title = model.Title,
+            Content = model.Content,
+            Timestamp = DateTime.UtcNow,
+            DisasterIncidentID = model.RecipientType == "Project" ? model.DisasterIncidentID : null
+        };
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync(); // Save to get the new NotificationID
+
+        // 2. Get the list of recipient User IDs
+        List<string> recipientIds = new List<string>();
+        switch (model.RecipientType)
+        {
+            case "All":
+                recipientIds = await _userManager.Users.Select(u => u.Id).ToListAsync();
+                break;
+            case "Project":
+                recipientIds = await _context.VolunteerAssignments
+                    .Where(va => va.VolunteerTask.DisasterIncidentID == model.DisasterIncidentID)
+                    .Select(va => va.VolunteerUserID)
+                    .Distinct()
+                    .ToListAsync();
+                break;
+            case "Specific":
+                if (!string.IsNullOrEmpty(model.RecipientUserID))
+                {
+                    recipientIds.Add(model.RecipientUserID);
+                }
+                break;
+        }
+
+        // 3. Create a UserNotification link for each recipient
+        foreach (var userId in recipientIds)
+        {
+            var userNotification = new UserNotification
+            {
+                UserID = userId,
+                NotificationID = notification.NotificationID,
+                IsRead = false
+            };
+            _context.UserNotifications.Add(userNotification);
+        }
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Message sent successfully!";
+        return RedirectToAction("CommunicationCenter");
+    }
 }

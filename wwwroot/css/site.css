@@ -366,20 +366,56 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid var(--border-color);
 }
 
-/* --- Dashboard Sidebar Login/Logout Links Fix (V2) --- */
-.sidebar .nav-item a.nav-link,
-.sidebar .nav-item form button.btn-link {
-    /* The '!important' flag ensures this style wins over any other conflicting styles */
-    color: #adb5bd !important;
-    text-align: left;
-    padding-left: 1rem;
-    background: none !important; /* Override button backgrounds */
-    border: none !important; /* Override button borders */
+/* --- Dashboard Sidebar Layout --- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    padding: 1.5rem;
+    background-color: #343a40; /* Dark background */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
-    .sidebar .nav-item a.nav-link:hover,
-    .sidebar .nav-item form button.btn-link:hover {
-        color: #ffffff !important; /* White on hover */
+    .sidebar .nav-link {
+        color: #adb5bd;
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 5px;
+    }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            width: 20px; /* Align icons */
+        }
+
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: #fff;
+            background-color: #495057;
+        }
+
+.main-content {
+    margin-left: 280px; /* Offset content by sidebar width */
+    padding: 2rem;
+}
+
+/* Fix for Login/Logout links inside the dark sidebar */
+.sidebar .nav-item form button.btn-link,
+.sidebar .nav-item a.nav-link[href*="/Account/Manage"] {
+    color: #adb5bd !important;
+    text-align: left;
+    background: none !important;
+    border: none !important;
+}
+
+    .sidebar .nav-item form button.btn-link:hover,
+    .sidebar .nav-item a.nav-link[href*="/Account/Manage"]:hover {
+        color: #ffffff !important;
     }
 
 /* --- Active Disasters Page --- */
