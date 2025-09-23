@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Gift_Of_The_Givers_Web_App.Models.UserNotification>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Messages";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Announcements and updates from the admin team.</p>
+
+<div class="list-group mt-4">
+    @foreach (var msg in Model)
+    {
+        <a asp-action="MessageDetails" asp-route-id="@msg.UserNotificationID"
+           class="list-group-item list-group-item-action @(msg.IsRead ? "" : "list-group-item-primary")">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1 @(msg.IsRead ? "" : "fw-bold")">@msg.Notification.Title</h5>
+                <small>@msg.Notification.Timestamp.ToShortDateString()</small>
+            </div>
+            <p class="mb-1">@(msg.Notification.Content.Length > 100 ? msg.Notification.Content.Substring(0, 100) + "..." : msg.Notification.Content)</p>
+        </a>
+    }
+</div>

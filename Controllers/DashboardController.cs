@@ -412,5 +412,43 @@ namespace Gift_Of_The_Givers_Web_App.Controllers
                 await _context.SaveChangesAsync();
             }
         }
+
+        // GET: Shows the list of all messages
+        [Authorize]
+        public async Task<IActionResult> MyMessages()
+        {
+            var userId = _userManager.GetUserId(User);
+            var messages = await _context.UserNotifications
+                .Where(un => un.UserID == userId)
+                .Include(un => un.Notification)
+                .OrderByDescending(un => un.Notification.Timestamp)
+                .ToListAsync();
+
+            return View(messages);
+        }
+
+        // GET: Shows the details of a single message and marks it as read
+        [Authorize]
+        public async Task<IActionResult> MessageDetails(int id) // id is the UserNotificationID
+        {
+            var userId = _userManager.GetUserId(User);
+            var userNotification = await _context.UserNotifications
+                .Include(un => un.Notification)
+                .FirstOrDefaultAsync(un => un.UserNotificationID == id && un.UserID == userId);
+
+            if (userNotification == null)
+            {
+                return NotFound();
+            }
+
+            // Mark the message as read
+            if (!userNotification.IsRead)
+            {
+                userNotification.IsRead = true;
+                await _context.SaveChangesAsync();
+            }
+
+            return View(userNotification.Notification);
+        }
     }
 }

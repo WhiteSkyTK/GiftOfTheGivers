@@ -1,0 +1,65 @@
+﻿@model Gift_Of_The_Givers_Web_App.ViewModels.SendMessageViewModel
+@{
+    ViewData["Title"] = "Communication Center";
+    Layout = "_DashboardLayout";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Send announcements, project updates, and direct messages to volunteers.</p>
+
+<div class="card p-4 mt-4">
+    <form asp-action="SendMessage" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <h5>1. Select Recipients</h5>
+        <div class="form-check">
+            <input asp-for="RecipientType" type="radio" value="All" class="form-check-input" checked />
+            <label class="form-check-label">All Volunteers</label>
+        </div>
+        <div class="form-check">
+            <input asp-for="RecipientType" type="radio" value="Project" class="form-check-input" />
+            <label class="form-check-label">Volunteers for a Specific Project</label>
+        </div>
+        <div class="form-check">
+            <input asp-for="RecipientType" type="radio" value="Specific" class="form-check-input" />
+            <label class="form-check-label">A Specific Volunteer</label>
+        </div>
+
+        <div id="project-selector" class="mt-3" style="display:none;">
+            <label asp-for="DisasterIncidentID" class="form-label">Select Project</label>
+            <select asp-for="DisasterIncidentID" asp-items="@Model.Incidents" class="form-select"></select>
+        </div>
+
+        <div id="user-selector" class="mt-3" style="display:none;">
+            <label asp-for="RecipientUserID" class="form-label">Select Volunteer</label>
+            <select asp-for="RecipientUserID" asp-items="@Model.Volunteers" class="form-select"></select>
+        </div>
+
+        <hr class="my-4" />
+
+        <h5>2. Compose Message</h5>
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Content" class="form-label"></label>
+            <textarea asp-for="Content" class="form-control" rows="8"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Send Message</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('input[name="RecipientType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('project-selector').style.display = (this.value === 'Project') ? 'block' : 'none';
+                document.getElementById('user-selector').style.display = (this.value === 'Specific') ? 'block' : 'none';
+            });
+        });
+    </script>
+}

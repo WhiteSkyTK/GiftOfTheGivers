@@ -1,0 +1,13 @@
+﻿@model Gift_Of_The_Givers_Web_App.Models.Notification
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = Model.Title;
+}
+
+<h1>@Model.Title</h1>
+<p class="text-muted">Sent on @Model.Timestamp.ToString("f")</p>
+<hr />
+
+<div class="mt-4">
+    @Html.Raw(Model.Content.Replace("\n", "<br />"))
+</div>
