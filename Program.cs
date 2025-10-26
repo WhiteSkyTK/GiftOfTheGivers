@@ -4,7 +4,8 @@ using Gift_Of_The_Givers_Web_App.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection; // Corrected namespace
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,3 +80,8 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+// --- FIX: Moved this line to the VERY END of the file ---
+public partial class Program { }
+// --- End Fix ---
+
