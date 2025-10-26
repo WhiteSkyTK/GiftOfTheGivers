@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<!-- Matches your main project -->
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+
+		<!-- Treat warnings as errors -->
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Core Testing Packages -->
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+
+		<!-- === FIX: Update xUnit version to 2.9.3 === -->
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.collector" Version="6.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+		<!-- === FIX: Update Moq version to 4.20.72 === -->
+		<PackageReference Include="Moq" Version="4.20.72" />
+
+		<!-- === FIX: Update EF Core InMemory version to 9.0.10 (assuming main project uses .NET 9 version) === -->
+		<!-- If your main project uses EF Core 8.x, keep this at 8.0.6 and ensure main project doesn't force 9.0.10 -->
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.10" />
+
+		<!-- Provides WebApplicationFactory -->
+		<!-- If your main project uses .NET 8, keep this at 8.0.6 -->
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.6" />
+
+		<!-- Reference to your main web app -->
+		<ProjectReference Include="..\Gift of The Givers Web App\Gift of The Givers Web App.csproj" />
+	</ItemGroup>
+
+	<!-- ImplicitUsings should handle Xunit, but add explicit 'using Xunit;' in .cs files if needed -->
+
+</Project>
+
