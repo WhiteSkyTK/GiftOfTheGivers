@@ -4,7 +4,7 @@ using Gift_Of_The_Givers_Web_App.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection; // Corrected namespace
+using Microsoft.Extensions.DependencyInjection; // Corrected namespaceb
 
 
 var builder = WebApplication.CreateBuilder(args);
