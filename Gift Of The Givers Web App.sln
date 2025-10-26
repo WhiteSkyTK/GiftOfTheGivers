@@ -5,9 +5,9 @@ VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gift Of The Givers Web App", "Gift Of The Givers Web App.csproj", "{169587CF-1399-47CA-89D9-9BB71B04B785}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiftOfGivers", "..\GiftOfGivers\GiftOfGivers.csproj", "{B35E2822-AC3D-42AC-A5A0-FCCD01A6856F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiftOfGivers.UnitTests", "GiftOfGivers.UnitTests.csproj", "{B35E2822-AC3D-42AC-A5A0-FCCD01A6856F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiftOfGiversUI", "..\GiftOfGiversUI\GiftOfGiversUI.csproj", "{892AE70F-298A-42FC-ADAB-AD36E03B73A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiftOfGiversUI.UITests", "GiftOfGiversUI.UITests.csproj", "{892AE70F-298A-42FC-ADAB-AD36E03B73A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
